@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +40,8 @@
 
         .header h1 {
             font-size: 2rem;
-            color: #00d4ff; /* Azul deportivo */
+            color: #00d4ff;
+            /* Azul deportivo */
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -111,7 +112,10 @@
         }
     </style>
 </head>
+
 <body>
+
+
 
     <div class="login-container">
         <div class="header">
@@ -132,6 +136,11 @@
             </div>
 
             <button type="submit" class="login-btn">Entrar al Vestuario</button>
+            <button type="button" id="googleLogin" class="login-btn"
+                style="background: white; color: #1a1a2e; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                Entrar con Google
+            </button>
         </form>
 
         <div class="footer-links">
@@ -140,5 +149,90 @@
         </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // 2. TUS CREDENCIALES (YA CONFIGURADAS)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
+            authDomain: "elchivi-9bfcf.firebaseapp.com",
+            projectId: "elchivi-9bfcf",
+            storageBucket: "elchivi-9bfcf.firebasestorage.app",
+            messagingSenderId: "571942007751",
+            appId: "1:571942007751:web:e1ffd9e90c9d749c7c5fe2",
+            measurementId: "G-TX42MBRHYZ"
+        };
+
+        // 3. INICIALIZAMOS EL MOTOR
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 4. CAPTURAMOS LOS ELEMENTOS DEL HTML
+        const loginForm = document.querySelector('form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // 5. LA LÓGICA DEL BOTÓN
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            console.log("Intentando entrar al vestuario...");
+
+            // Llamamos a Firebase para loguear
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // SI TODO SALE BIEN:
+                    const user = userCredential.user;
+                    alert("¡Acceso concedido! Bienvenido, " + user.email);
+
+                    // Aquí pones la web a la que quieres que vaya tras el login
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    // SI HAY UN ERROR (Contraseña mal, usuario no existe, etc.)
+                    console.error("Mistake detected", error.code);
+
+                    if (error.code === 'auth/invalid-credential') {
+                        alert("Error: user or password are not valid");
+                    } else if (error.code === 'auth/user-not-found') {
+                        alert("Error: This journalist doesn't exist");
+                    } else {
+                        alert("Oops, something went wrong: " + error.message);
+                    }
+                });
+        });
+        // AÑADE "GoogleAuthProvider" y "signInWithPopup" a tu lista de imports arriba
+
+
+        // ... (donde ya tenías el initializeApp y auth) ...
+        const provider = new GoogleAuthProvider();
+        const googleBtn = document.getElementById('googleLogin');
+
+        // Lógica para el botón de Google
+        googleBtn.addEventListener('click', async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                alert("¡Bienvenido a EL CHIVATAZO SPORT, " + user.displayName + "!");
+                window.location.href = "dashboard.html";
+
+            } catch (error) {
+                console.error("Google Error", error.code);
+                alert("Oops, something went wrong: " + error.message);
+            }
+        });
+        
+    </script>
 </body>
+
 </html>
