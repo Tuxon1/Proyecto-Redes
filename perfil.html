@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PressRoom - Dashboard Periodístico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        [contenteditable]:focus { outline: 2px solid #e11d48; background: #fff; border-radius: 4px; padding: 0 4px; }
+        
+        /* Estilos para que las zonas de carga sean obvias */
+        .upload-zone { cursor: pointer; position: relative; overflow: hidden; }
+        .upload-zone:hover::after { 
+            content: "SUBIR IMAGEN 📷"; 
+            position: absolute; inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: bold; font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-6 p-4">
+        
+        <aside class="md:w-64 space-y-2">
+            <div class="text-2xl font-black italic text-rose-600 mb-8 tracking-tighter">EL CHIVATAZO SPORTS</div>
+            <nav class="space-y-1 font-bold">
+                <div class="p-3 bg-rose-600 text-white rounded-lg cursor-pointer">📻 Al Aire</div>
+                <div class="p-3 hover:bg-white rounded-lg transition cursor-pointer">📊 Central de Datos</div>
+            </nav>
+        </aside>
+
+        <main class="flex-1">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                
+                <div class="upload-zone h-60 bg-slate-200" onclick="document.getElementById('input-header').click();">
+                    <img id="header-img" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
+                    <input type="file" id="input-header" class="hidden" accept="image/*" onchange="updateImg(this, 'header-img')">
+                </div>
+
+                <div class="px-8 pb-8">
+                    <div class="relative flex justify-between items-end -mt-16 mb-6">
+                        <div class="upload-zone w-32 h-32 rounded-xl border-4 border-white shadow-lg bg-slate-100" onclick="document.getElementById('input-avatar').click();">
+                            <img id="avatar-img" class="w-full h-full object-cover rounded-lg" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1374&auto=format&fit=crop">
+                            <input type="file" id="input-avatar" class="hidden" accept="image/*" onchange="updateImg(this, 'avatar-img')">
+                        </div>
+                        <button class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-rose-600 transition">Publicar Primicia</button>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-3xl font-black tracking-tight" contenteditable="true">Tu Nombre Profesional</h1>
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded italic">PRENSA</span>
+                        </div>
+                        <p class="text-rose-600 font-bold text-lg" contenteditable="true">Analista de [Tu Deporte]</p>
+                        <p class="max-w-2xl text-slate-600 leading-relaxed pt-2" contenteditable="true">
+                            Haz clic aquí para escribir tu biografía o medio para el que trabajas.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-10 mt-6 border-t pt-6 border-slate-100 font-black">
+                        <div>
+                            <p class="text-2xl" contenteditable="true">0</p>
+                            <p class="text-slate-400 text-[10px] uppercase tracking-widest">Lectores</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl" contenteditable="true">0</p>
+                            <p class="text-slate-400 text-[10px] uppercase tracking-widest">Artículos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="font-black text-slate-400 text-sm uppercase mb-4">Último Reporte</h3>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                    <div class="flex items-center gap-2 mb-3 text-rose-600 font-bold text-xs">
+                        <span class="w-2 h-2 bg-rose-600 rounded-full animate-ping"></span> VIVO
+                    </div>
+                    <h4 class="text-xl font-bold mb-2" contenteditable="true">Escribe un titular impactante aquí...</h4>
+                    <p class="text-slate-600" contenteditable="true">Desarrolla el contenido de la noticia o la última hora del mercado.</p>
+                </div>
+            </div>
+        </main>
+
+        <aside class="md:w-80 space-y-6">
+            <div class="bg-slate-900 text-white p-6 rounded-2xl">
+                <h3 class="font-black mb-4 text-sm tracking-widest">MARCADORES LÍNEA</h3>
+                <div class="space-y-4 font-mono">
+                    <div class="flex justify-between border-b border-slate-800 pb-2">
+                        <span contenteditable="true">LIVERPOOL</span> <span class="text-rose-500">3-1</span> <span contenteditable="true">CITY</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-800 pb-2">
+                        <span contenteditable="true">CHIEFS</span> <span class="text-rose-500">24-17</span> <span contenteditable="true">49ERS</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // Esta función ahora recibe el elemento input directamente
+        function updateImg(input, imgId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(imgId);
+                    img.src = e.target.result;
+                    img.style.display = 'block'; // Asegura que se vea
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
