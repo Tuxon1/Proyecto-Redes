@@ -195,7 +195,7 @@
                     alert("¡Acceso concedido! Bienvenido, " + user.email);
 
                     // Aquí pones la web a la que quieres que vaya tras el login
-                    window.location.href = "dashboard.html";
+                    window.location.href = "perfil.html";
                 })
                 .catch((error) => {
                     // SI HAY UN ERROR (Contraseña mal, usuario no existe, etc.)
@@ -224,7 +224,7 @@
                 const user = result.user;
 
                 alert("¡Bienvenido a EL CHIVATAZO SPORT, " + user.displayName + "!");
-                window.location.href = "dashboard.html";
+                window.location.href = "perfil.html";
 
             } catch (error) {
                 console.error("Google Error", error.code);
