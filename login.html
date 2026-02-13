@@ -144,9 +144,9 @@
         </form>
 
         <div class="footer-links">
-            <p>¿No tienes cuenta? <a href="#">Solicitar registro</a></p>
-            <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-        </div>
+    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    <p><a href="recuperar.html">¿Olvidaste tu contraseña?</a></p>
+</div>
     </div>
 
     <script type="module">
@@ -155,7 +155,8 @@
             getAuth,
             signInWithEmailAndPassword,
             GoogleAuthProvider,
-            signInWithPopup
+            signInWithPopup,
+            sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // 2. TUS CREDENCIALES (YA CONFIGURADAS)
@@ -231,7 +232,7 @@
                 alert("Oops, something went wrong: " + error.message);
             }
         });
-        
+
     </script>
 </body>
 
