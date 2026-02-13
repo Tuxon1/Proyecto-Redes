@@ -110,6 +110,33 @@
         .footer-links a:hover {
             text-decoration: underline;
         }
+
+        /* CLASE DE ERROR (ROJO Y TEMBLOR) */
+        .input-error {
+            border: 1px solid #ff4d4d !important; /* Borde rojo forzado */
+            background: rgba(255, 77, 77, 0.1) !important; /* Fondo rojo suave */
+            animation: shake 0.5s; /* Duración del temblor */
+        }
+
+        /* ANIMACIÓN DE TEMBLOR (VIBRACIÓN) */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Texto de error oculto por defecto */
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-weight: bold;
+            display: none; /* Oculto hasta que falle */
+            text-align: left;
+            padding-left: 5px;
+        }
     </style>
 </head>
 
@@ -133,6 +160,7 @@
             <div class="form-group">
                 <label for="password">Contraseña</label>
                 <input type="password" id="password" placeholder="••••••••" required>
+                <p id="loginErrorMsg" class="error-msg">Usuario o contraseña incorrectos</p>
             </div>
 
             <button type="submit" class="login-btn">Entrar al Vestuario</button>
@@ -191,24 +219,38 @@
             // Llamamos a Firebase para loguear
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // SI TODO SALE BIEN:
-                    const user = userCredential.user;
-                    alert("¡Acceso concedido! Bienvenido, " + user.email);
 
                     // Aquí pones la web a la que quieres que vaya tras el login
                     window.location.href = "perfil.html";
                 })
                 .catch((error) => {
                     // SI HAY UN ERROR (Contraseña mal, usuario no existe, etc.)
-                    console.error("Mistake detected", error.code);
+                    console.error("Error detectado:", error.code);
 
-                    if (error.code === 'auth/invalid-credential') {
-                        alert("Error: user or password are not valid");
-                    } else if (error.code === 'auth/user-not-found') {
-                        alert("Error: This journalist doesn't exist");
-                    } else {
-                        alert("Oops, something went wrong: " + error.message);
-                    }
+                    // 1. Capturamos los elementos visuales
+                    const errorText = document.getElementById('loginErrorMsg');
+                    const inputs = [emailInput, passwordInput];
+
+                    // 2. Activamos el modo "Error Visual"
+                    inputs.forEach(input => {
+                        input.classList.add('input-error'); // Pone rojo y vibra
+                        input.value = ''; // Borra lo escrito
+                    });
+                    
+                    // 3. Mostramos el mensaje debajo
+                    errorText.style.display = 'block';
+
+                    // 4. TRUCO PRO: Si el usuario empieza a escribir de nuevo, quitamos el rojo y el error
+                    // Esto mejora mucho la sensación de "volver a intentar"
+                    inputs.forEach(input => {
+                        input.addEventListener('input', () => {
+                            input.classList.remove('input-error');
+                            errorText.style.display = 'none';
+                        }, { once: true }); // {once: true} hace que esto se ejecute solo una vez por fallo
+                    });
+
+                    // (Opcional) Ponemos el foco en el email para que vuelva a escribir rápido
+                    emailInput.focus();
                 });
         });
         // AÑADE "GoogleAuthProvider" y "signInWithPopup" a tu lista de imports arriba
@@ -224,8 +266,7 @@
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
 
-                alert("¡Bienvenido a EL CHIVATAZO SPORT, " + user.displayName + "!");
-                window.location.href = ".html";
+                window.location.href = "perfil.html";
 
             } catch (error) {
                 console.error("Google Error", error.code);

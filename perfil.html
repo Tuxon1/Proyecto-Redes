@@ -1,77 +1,182 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PressRoom | Dashboard Periodístico</title>
+    <title>PressRoom | Vestuario Periodístico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        [contenteditable]:focus { outline: 2px solid #e11d48; background: #fff; border-radius: 4px; padding: 0 4px; }
-        
-        .upload-zone { cursor: pointer; position: relative; overflow: hidden; }
-        .upload-zone:hover::after { 
-            content: "CAMBIAR IMAGEN 📷"; 
-            position: absolute; inset: 0; 
-            background: rgba(0,0,0,0.5); 
-            display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-size: 0.8rem;
+        /* Fusionamos las fuentes y el fondo oscuro */
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Efecto Cristal para tu tarjeta central */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Colores personalizados */
+        .text-cyan-glow {
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
+
+        .bg-cyan-custom {
+            background-color: #00d4ff;
+            color: #1a1a2e;
+        }
+
+        .bg-cyan-custom:hover {
+            background-color: #0099cc;
+        }
+
+        [contenteditable]:focus {
+            outline: 2px solid #00d4ff;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+
+        .upload-zone {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover::after {
+            content: "CAMBIAR IMAGEN 📷";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* Avatar circular con el diseño propuesto */
+        .avatar-container {
+            border: 3px solid #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            background-color: #1a1a2e;
         }
     </style>
 </head>
-<body class="text-slate-900">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-6 p-4">
-        
-        <aside class="md:w-64 space-y-2">
-            <div class="text-2xl font-black italic text-rose-600 mb-8 tracking-tighter uppercase">El Chivatazo</div>
-            <nav class="space-y-1 font-bold">
-                <div class="p-3 bg-rose-600 text-white rounded-lg cursor-pointer">📻 Al Aire</div>
-                <div id="logoutBtn" class="p-3 hover:bg-rose-100 text-rose-600 rounded-lg transition cursor-pointer">Cerrar Sesión</div>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 h-full">
+
+        <aside class="md:w-64 space-y-4">
+            <div class="text-3xl font-black italic text-cyan-glow mb-10 tracking-tighter uppercase mt-2">El Chivatazo
+            </div>
+            <nav class="space-y-3 font-bold text-sm">
+                <div class="p-3 bg-cyan-custom rounded-lg cursor-pointer flex items-center gap-2">📻 Al Aire</div>
             </nav>
         </aside>
 
-        <main class="flex-1">
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+       <main class="flex-1">
+            <div class="glass-card rounded-2xl overflow-hidden relative">
                 
-                <div class="upload-zone h-60 bg-slate-200" onclick="document.getElementById('input-header').click();">
-                    <img id="header-img" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
+                <div class="absolute top-4 right-4 z-50">
+                    <button id="menuToggle" class="text-white hover:text-[#00d4ff] transition p-2 rounded-full hover:bg-black/30 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                    </button>
+                    
+                    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-[#1a1a2e] border border-[#00d4ff]/30 rounded-xl shadow-2xl overflow-hidden">
+                        <div id="logoutBtn" class="px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer transition font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Cerrar Sesión
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-zone h-60 bg-slate-800" onclick="document.getElementById('input-header').click();">
+                    <img id="header-img" class="w-full h-full object-cover opacity-70" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
                     <input type="file" id="input-header" class="hidden" accept="image/*" onchange="updateImg(this, 'header-img')">
                 </div>
 
-                <div class="px-8 pb-8">
-                    <div class="relative flex justify-between items-end -mt-16 mb-6">
-                        <div class="upload-zone w-32 h-32 rounded-xl border-4 border-white shadow-lg bg-slate-100" onclick="document.getElementById('input-avatar').click();">
-                            <img id="avatar-img" class="w-full h-full object-cover rounded-lg" src="https://via.placeholder.com/150">
-                            <input type="file" id="input-avatar" class="hidden" accept="image/*" onchange="updateImg(this, 'avatar-img')">
+                <div class="px-8 pb-8 relative">
+                    <div class="flex justify-between items-end -mt-16 mb-4">
+                        <div class="upload-zone w-32 h-32 rounded-full avatar-container" onclick="document.getElementById('input-avatar').click();">
+                            <img id="userPhoto" class="w-full h-full object-cover rounded-full" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                            <input type="file" id="input-avatar" class="hidden" accept="image/*" onchange="updateImg(this, 'userPhoto')">
                         </div>
-                        <button class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-rose-600 transition">Publicar Primicia</button>
+                        <button class="bg-cyan-custom px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-[#1a1a2e]">Publicar Primicia</button>
                     </div>
 
                     <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <h1 id="user-name" class="text-3xl font-black tracking-tight" contenteditable="true">Cargando periodista...</h1>
-                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded italic uppercase">Prensa Verificada</span>
+                        <div class="flex items-center gap-3">
+                            <h1 id="userName" class="text-3xl font-black tracking-tight">Cargando...</h1>
+                            <span class="bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/50 text-xs font-bold px-2 py-0.5 rounded italic uppercase">Prensa Verificada</span>
                         </div>
-                        <p class="text-rose-600 font-bold text-lg" contenteditable="true">Cronista Deportivo / Analista Táctico</p>
-                        <p class="max-w-2xl text-slate-600 leading-relaxed pt-2" contenteditable="true">
-                            Haz clic aquí para escribir tu biografía profesional.
+                        
+                        <p id="userEmail" class="text-slate-400 text-sm">cargando@correo.com</p>
+                        
+                        <p id="userMedia" class="text-[#00d4ff] font-bold text-lg pt-3 uppercase tracking-wide">Buscando credenciales...</p>
+                        
+                        <p class="max-w-2xl text-slate-300 leading-relaxed pt-2" contenteditable="true">
+                            Haz clic aquí para escribir tu biografía profesional o especialidad táctica...
                         </p>
                     </div>
 
-                    <div class="flex gap-10 mt-6 border-t pt-6 border-slate-100 font-black">
-                        <div><p class="text-2xl" contenteditable="true">1.2K</p><p class="text-slate-400 text-[10px] uppercase tracking-widest">Lectores</p></div>
-                        <div><p class="text-2xl" contenteditable="true">45</p><p class="text-slate-400 text-[10px] uppercase tracking-widest">Primicias</p></div>
+                    <div class="flex gap-12 mt-8 border-t border-white/10 pt-6 font-black">
+                        <div>
+                            <p class="text-3xl text-cyan-glow" contenteditable="true">1.2K</p>
+                            <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Lectores</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl text-cyan-glow" contenteditable="true">45</p>
+                            <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Primicias</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <div id="logoutModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/80 backdrop-blur-sm transition-opacity">
+        <div class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
+            
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/10 mb-6 border border-red-500/20">
+                <svg class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </div>
+            
+            <h3 class="text-xl font-black text-white mb-2 tracking-wide">¿Abandonar el vestuario?</h3>
+            <p class="text-slate-300 text-sm mb-8">¿Estás seguro de que quieres cerrar tu sesión actual?</p>
+            
+            <div class="flex justify-between gap-4">
+                <button id="cancelLogoutBtn" class="flex-1 py-3 rounded-lg font-bold border border-white/20 text-slate-300 hover:bg-white/10 hover:text-white transition">
+                    Cancelar
+                </button>
+                <button id="confirmLogoutBtn" class="flex-1 py-3 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] transition">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
@@ -84,21 +189,75 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
+        // Referencias HTML
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const userMedia = document.getElementById('userMedia');
+        const userPhoto = document.getElementById('userPhoto');
+
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Solo mostramos nombre y foto, el correo se queda en el sistema pero no se imprime en el HTML
-                document.getElementById('user-name').innerText = user.displayName || "Periodista";
-                if (user.photoURL) {
-                    document.getElementById('avatar-img').src = user.photoURL.replace("=s96-c", "=s400-c");
+                userEmail.textContent = user.email; // Ponemos el correo visible
+
+                // Si viene de Google, ya tiene nombre y foto
+                if (user.displayName) userName.textContent = user.displayName;
+                if (user.photoURL) userPhoto.src = user.photoURL.replace("=s96-c", "=s400-c"); // Foto en alta calidad
+
+                // Buscar datos extra en Firestore (Medio y Nombre de registro)
+                try {
+                    const docRef = doc(db, "periodistas", user.uid);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const datos = docSnap.data();
+                        userName.textContent = datos.nombreCompleto || userName.textContent;
+                        userMedia.textContent = datos.medioComunicacion || "Freelance";
+                    } else {
+                        userMedia.textContent = "Sin medio asignado";
+                    }
+                } catch (error) {
+                    console.error("Error Firestore:", error);
                 }
             } else {
-                window.location.href = "login.html"; 
+                window.location.href = "login.html"; // Redirigir al login si no hay sesión
             }
         });
 
+        // --- LÓGICA DEL MODAL DE CERRAR SESIÓN ---
+        const logoutModal = document.getElementById('logoutModal');
+
+        // 1. Al hacer clic en "Cerrar Sesión" abrimos el pop-up
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = "login.html");
+            // Ocultamos el menú de 3 puntos directamente para evitar errores
+            document.getElementById('dropdownMenu').classList.add('hidden'); 
+            
+            // Mostramos el pop-up
+            logoutModal.classList.remove('hidden'); 
+        });
+
+        // 2. Al hacer clic en "Cancelar", ocultamos el pop-up
+        document.getElementById('cancelLogoutBtn').addEventListener('click', () => {
+            logoutModal.classList.add('hidden');
+        });
+
+        // 3. Al hacer clic en "Confirmar", cerramos la sesión de verdad
+        document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Error al cerrar sesión:", error);
+            });
+        });
+
+        // 4. Al hacer clic fuera del pop-up (en el fondo oscuro), también lo ocultamos
+        logoutModal.addEventListener('click', (e) => {
+            // Comprobamos que el clic ha sido exactamente en el fondo (logoutModal) 
+            // y no dentro de la tarjeta blanca o los botones
+            if (e.target === logoutModal) {
+                logoutModal.classList.add('hidden');
+            }
         });
     </script>
 
@@ -111,5 +270,23 @@
             }
         }
     </script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        // Mostrar/Ocultar al hacer clic en los 3 puntos
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que el clic se propague al documento
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Ocultar si hacemos clic fuera del menú
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
+
 </html>
