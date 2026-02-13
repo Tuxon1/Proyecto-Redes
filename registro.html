@@ -252,7 +252,7 @@
     <script type="module">
         // 1. IMPORTAMOS FIREBASE, AUTH Y FIRESTORE (Base de datos)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // 2. TU CONFIGURACIÓN
@@ -282,11 +282,14 @@
             const password = document.getElementById('password').value;
 
             try {
-                // Paso A: Crear el usuario en Firebase Authentication (Email y Contraseña)
+                // Paso 1: Crear el usuario en Firebase Authentication (Email y Contraseña)
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // Paso B: Guardar los datos extra en la Base de Datos (Firestore)
+                // 2. ENVIAR CORREO DE VERIFICACIÓN (NUEVO)
+                await sendEmailVerification(user);
+
+                // Paso 3: Guardar los datos extra en la Base de Datos (Firestore)
                 // Creamos un documento en la colección "periodistas" usando su ID único (user.uid)
                 await setDoc(doc(db, "periodistas", user.uid), {
                     nombreCompleto: nombre,
@@ -295,11 +298,18 @@
                     fechaRegistro: new Date().toISOString()
                 });
 
-                // 3. ¡ÉXITO! En lugar de redirigir, mostramos el modal
+                // 4. ¡ÉXITO! En lugar de redirigir, mostramos el modal
                 const modal = document.getElementById('successModal');
+
+                modal.querySelector('h2').textContent = "¡Casi estamos dentro!";
+                modal.querySelector('p').innerHTML = `
+                    Hemos enviado un correo de verificación a <strong>${email}</strong>.<br>
+                    Por favor, revisa tu bandeja de entrada (y spam) y confirma tu cuenta para poder acceder.
+                `;
+
                 modal.style.display = 'flex'; // Hacemos visible el pop-up
 
-                // 4. Configurar el botón del modal para ir al login
+                // 5. Configurar el botón del modal para ir al login
                 document.getElementById('btnVolverLogin').addEventListener('click', () => {
                     window.location.href = "login.html";
                 });

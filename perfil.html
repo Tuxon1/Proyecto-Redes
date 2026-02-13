@@ -72,6 +72,54 @@
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
             background-color: #1a1a2e;
         }
+
+        /* --- ESTILOS DEL MODAL DE NO VERIFICADO --- */
+        .warning-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+            /* Amarillo Peligro */
+            animation: pulse-warning 1.5s infinite;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+        }
+
+        @keyframes pulse-warning {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Botón específico para volver */
+        .btn-return {
+            background: transparent;
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        .btn-return:hover {
+            background: #ffcc00;
+            color: #1a1a2e;
+            /* Texto oscuro al pasar el ratón */
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+        }
     </style>
 </head>
 
@@ -196,6 +244,28 @@
             </div>
         </div>
     </div>
+
+    <div id="verificationModal"
+        class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
+        <div
+            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#ffcc00]/30 shadow-[0_0_40px_rgba(255,204,0,0.1)]">
+
+            <div class="warning-icon">⚠️</div>
+
+            <h2 class="text-xl font-black text-[#ffcc00] mb-3 tracking-wide uppercase">ACCESO RESTRINGIDO</h2>
+
+            <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                Tu cuenta aún no ha sido verificada.<br><br>
+                Por favor, revisa tu bandeja de entrada (y la carpeta de <strong>SPAM</strong>) para activar tu pase de
+                prensa.
+            </p>
+
+            <button id="btnBackToLogin" class="btn-return">
+                Vuelvo ahora
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -222,6 +292,55 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // --- EL PORTERO 3.0: VERIFICACIÓN + LIMPIEZA AUTOMÁTICA ---
+
+                if (!user.emailVerified) {
+
+                    // 1. CALCULAMOS EL TIEMPO
+                    const fechaCreacion = new Date(user.metadata.creationTime).getTime();
+                    const ahora = new Date().getTime();
+                    const sieteDiasEnMs = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
+
+                    // 2. ¿HA PASADO MÁS DE UNA SEMANA?
+                    if (ahora - fechaCreacion > sieteDiasEnMs) {
+
+                        // ¡SI! La cuenta ha caducado. LA ELIMINAMOS.
+                        try {
+                            // Intentamos borrar el usuario de Firebase Auth
+                            await user.delete();
+
+                            // (Opcional) Si quieres ser muy limpio, aquí podrías borrar también 
+                            // el documento de Firestore, pero requiere más código. 
+                            // Con borrar el acceso (Auth) suele bastar.
+
+                            alert("⌛ TPO. AGOTADO\n\nTu solicitud de registro ha caducado (límite de 7 días sin verificar).\nLa cuenta ha sido eliminada por seguridad.\n\nPor favor, regístrate de nuevo.");
+                            window.location.href = "registro.html"; // Lo mandamos a registrarse
+
+                        } catch (error) {
+                            console.error("Error al borrar cuenta caducada:", error);
+                            // Si falla el borrado (raro), al menos cerramos sesión
+                            await signOut(auth);
+                            window.location.href = "login.html";
+                        }
+                        return; // Detenemos todo aquí
+                    }
+
+                    // 3. SI AÚN NO HA PASADO LA SEMANA, MOSTRAMOS EL AVISO NORMAL
+                    const verifyModal = document.getElementById('verificationModal');
+
+                    // (Opcional) Personalizamos el mensaje para decirle cuánto le queda
+                    // verifyModal.querySelector('p').innerHTML += "<br><br><small>Tienes 7 días para verificarla.</small>";
+
+                    verifyModal.classList.remove('hidden');
+
+                    document.getElementById('btnBackToLogin').addEventListener('click', async () => {
+                        await signOut(auth);
+                        window.location.href = "login.html";
+                    });
+
+                    return; // Detenemos el código
+                }
+
                 userEmail.textContent = user.email; // Ponemos el correo visible
 
                 // Si viene de Google, ya tiene nombre y foto
