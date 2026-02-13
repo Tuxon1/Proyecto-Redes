@@ -113,18 +113,35 @@
 
         /* CLASE DE ERROR (ROJO Y TEMBLOR) */
         .input-error {
-            border: 1px solid #ff4d4d !important; /* Borde rojo forzado */
-            background: rgba(255, 77, 77, 0.1) !important; /* Fondo rojo suave */
-            animation: shake 0.5s; /* Duración del temblor */
+            border: 1px solid #ff4d4d !important;
+            /* Borde rojo forzado */
+            background: rgba(255, 77, 77, 0.1) !important;
+            /* Fondo rojo suave */
+            animation: shake 0.5s;
+            /* Duración del temblor */
         }
 
         /* ANIMACIÓN DE TEMBLOR (VIBRACIÓN) */
         @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
 
         /* Texto de error oculto por defecto */
@@ -133,7 +150,8 @@
             font-size: 0.85rem;
             margin-top: 5px;
             font-weight: bold;
-            display: none; /* Oculto hasta que falle */
+            display: none;
+            /* Oculto hasta que falle */
             text-align: left;
             padding-left: 5px;
         }
@@ -172,9 +190,9 @@
         </form>
 
         <div class="footer-links">
-    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
-    <p><a href="recuperar.html">¿Olvidaste tu contraseña?</a></p>
-</div>
+            <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+            <p><a href="recuperar.html">¿Olvidaste tu contraseña?</a></p>
+        </div>
     </div>
 
     <script type="module">
@@ -236,7 +254,7 @@
                         input.classList.add('input-error'); // Pone rojo y vibra
                         input.value = ''; // Borra lo escrito
                     });
-                    
+
                     // 3. Mostramos el mensaje debajo
                     errorText.style.display = 'block';
 

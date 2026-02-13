@@ -1,33 +1,124 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PressBox | Recuperar Contraseña</title>
     <style>
         /* Mismo CSS para mantener el diseño intacto */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); height: 100vh; display: flex; justify-content: center; align-items: center; color: white; }
-        .login-container { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 2rem; color: #00d4ff; text-transform: uppercase; letter-spacing: 2px; }
-        .header p { font-size: 0.9rem; opacity: 0.7; margin-top: 5px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: bold; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.1); color: white; outline: none; transition: 0.3s; }
-        input:focus { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 8px #00d4ff; }
-        .login-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #00d4ff; color: #1a1a2e; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .login-btn:hover { background: #0099cc; transform: translateY(-2px); }
-        .footer-links { margin-top: 20px; text-align: center; font-size: 0.8rem; }
-        .footer-links a { color: #00d4ff; text-decoration: none; }
-        .footer-links a:hover { text-decoration: underline; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 8px #00d4ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0099cc;
+            transform: translateY(-2px);
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="login-container">
         <div class="header">
-            <h1>Recuperación</h1>
+            <h1>Recupera tu contraseña</h1>
             <p>Introduce tu correo asociado al vestuario y te enviaremos las instrucciones</p>
         </div>
 
@@ -72,7 +163,7 @@
             sendPasswordResetEmail(auth, email)
                 .then(() => {
                     // Opcional: Redirigir de vuelta al login tras enviarlo
-                    window.location.href = "spam.html"; 
+                    window.location.href = "spam.html";
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -87,4 +178,5 @@
         });
     </script>
 </body>
+
 </html>

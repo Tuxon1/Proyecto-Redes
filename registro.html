@@ -1,28 +1,202 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PressBox | Registro Periodistas</title>
     <style>
         /* Mismo CSS que tu login para mantener el estilo */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); height: 100vh; display: flex; justify-content: center; align-items: center; color: white; }
-        .login-container { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 2rem; color: #00d4ff; text-transform: uppercase; letter-spacing: 2px; }
-        .header p { font-size: 0.9rem; opacity: 0.7; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; }
-        input { width: 100%; padding: 10px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.1); color: white; outline: none; transition: 0.3s; }
-        input:focus { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 8px #00d4ff; }
-        .login-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #00d4ff; color: #1a1a2e; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 10px; }
-        .login-btn:hover { background: #0099cc; transform: translateY(-2px); }
-        .footer-links { margin-top: 20px; text-align: center; font-size: 0.8rem; }
-        .footer-links a { color: #00d4ff; text-decoration: none; }
-        .footer-links a:hover { text-decoration: underline; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 8px #00d4ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #0099cc;
+            transform: translateY(-2px);
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* ESTILOS DE ERROR (Vibración y Rojo) */
+        .input-error {
+            border: 1px solid #ff4d4d !important;
+            background: rgba(255, 77, 77, 0.1) !important;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-weight: bold;
+            display: none;
+            /* Oculto por defecto */
+        }
+
+        /* --- ESTILOS DEL MODAL DE ÉXITO --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            /* Fondo oscuro casi opaco */
+            backdrop-filter: blur(5px);
+            display: none;
+            /* Oculto por defecto */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .star-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div class="login-container">
@@ -38,15 +212,19 @@
             </div>
             <div class="form-group">
                 <label for="medio">Medio de Comunicación</label>
-                <input type="text" id="medio" placeholder="Ej: Diario AS, Cadena SER, Freelance..." required>
+                <input type="text" id="medio" placeholder="Ej: Diario AS, Cadena SER..." required>
             </div>
+
             <div class="form-group">
                 <label for="email">Correo Electrónico</label>
                 <input type="email" id="email" placeholder="nombre@prensa.com" required>
+                <p id="emailError" class="error-msg">Error en el correo</p>
             </div>
+
             <div class="form-group">
                 <label for="password">Contraseña (Mínimo 6 caracteres)</label>
                 <input type="password" id="password" placeholder="••••••••" required>
+                <p id="passError" class="error-msg">Error en la contraseña</p>
             </div>
 
             <button type="submit" class="login-btn">Crear Cuenta</button>
@@ -57,6 +235,20 @@
         </div>
     </div>
 
+    <div id="successModal" class="modal-overlay">
+        <div class="login-container" style="max-width: 350px; text-align: center; border-color: #00d4ff;">
+
+            <div class="star-icon">⭐</div>
+
+            <h2 style="color: #00d4ff; margin-bottom: 10px; text-transform: uppercase;">¡Fichaje Completado!</h2>
+
+            <p style="margin-bottom: 25px; opacity: 0.8;">
+                Tu registro se ha realizado con éxito. Ya puedes acceder al vestuario.
+            </p>
+
+            <button id="btnVolverLogin" class="login-btn">Volver al Login</button>
+        </div>
+    </div>
     <script type="module">
         // 1. IMPORTAMOS FIREBASE, AUTH Y FIRESTORE (Base de datos)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -103,21 +295,56 @@
                     fechaRegistro: new Date().toISOString()
                 });
 
-                alert("¡Registro completado con éxito! Bienvenido al vestuario.");
-                // Redirigimos al perfil o al login
-                window.location.href = "login.html"; 
+                // 3. ¡ÉXITO! En lugar de redirigir, mostramos el modal
+                const modal = document.getElementById('successModal');
+                modal.style.display = 'flex'; // Hacemos visible el pop-up
+
+                // 4. Configurar el botón del modal para ir al login
+                document.getElementById('btnVolverLogin').addEventListener('click', () => {
+                    window.location.href = "login.html";
+                });
 
             } catch (error) {
-                console.error("Error en el registro:", error);
+                console.error("Error en el registro:", error.code);
+
+                // Referencias a los campos y textos de error
+                const emailInput = document.getElementById('email');
+                const passInput = document.getElementById('password');
+                const emailMsg = document.getElementById('emailError');
+                const passMsg = document.getElementById('passError');
+
+                // Función auxiliar para mostrar el error en un campo concreto
+                const mostrarError = (input, msgElement, texto) => {
+                    input.classList.add('input-error'); // Rojo y vibración
+                    input.value = ''; // Borramos lo escrito (opcional)
+                    input.focus();    // Ponemos el cursor ahí
+                    msgElement.textContent = texto; // Ponemos el texto específico
+                    msgElement.style.display = 'block'; // Lo hacemos visible
+
+                    // Al escribir de nuevo, quitamos el error
+                    input.addEventListener('input', () => {
+                        input.classList.remove('input-error');
+                        msgElement.style.display = 'none';
+                    }, { once: true });
+                };
+
+                // LÓGICA DE ERRORES ESPECÍFICOS
                 if (error.code === 'auth/email-already-in-use') {
-                    alert("Ese correo ya está registrado.");
-                } else if (error.code === 'auth/weak-password') {
-                    alert("La contraseña debe tener al menos 6 caracteres.");
-                } else {
-                    alert("Error al registrar: " + error.message);
+                    mostrarError(emailInput, emailMsg, "Ese correo ya está registrado.");
+                }
+                else if (error.code === 'auth/weak-password') {
+                    mostrarError(passInput, passMsg, "La contraseña debe tener al menos 6 caracteres.");
+                }
+                else if (error.code === 'auth/invalid-email') {
+                    mostrarError(emailInput, emailMsg, "El formato del correo no es correcto.");
+                }
+                else {
+                    // Si es otro error raro, usamos un alert clásico por seguridad
+                    alert("Error desconocido: " + error.message);
                 }
             }
         });
     </script>
 </body>
+
 </html>
