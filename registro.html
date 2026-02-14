@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PressBox | Registro Periodistas</title>
+    <title>PressBox | Registro</title>
     <style>
-        /* Mismo CSS que tu login para mantener el estilo */
+        /* ESTILOS GENERALES */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,7 +16,7 @@
 
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -32,11 +32,12 @@
             width: 100%;
             max-width: 450px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
@@ -66,7 +67,7 @@
             width: 100%;
             padding: 10px;
             border-radius: 8px;
-            border: none;
+            border: 1px solid transparent;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             outline: none;
@@ -108,11 +109,36 @@
             text-decoration: none;
         }
 
-        .footer-links a:hover {
-            text-decoration: underline;
+        /* PESTAÑAS DE NAVEGACIÓN */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ESTILOS DE ERROR (Vibración y Rojo) */
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            opacity: 1;
+            border-bottom: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        /* --- ESTILOS DE ERROR (VIBRACIÓN) --- */
         .input-error {
             border: 1px solid #ff4d4d !important;
             background: rgba(255, 77, 77, 0.1) !important;
@@ -143,14 +169,14 @@
 
         .error-msg {
             color: #ff4d4d;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin-top: 5px;
             font-weight: bold;
             display: none;
-            /* Oculto por defecto */
+            text-align: left;
         }
 
-        /* --- ESTILOS DEL MODAL DE ÉXITO --- */
+        /* --- MODAL DE ÉXITO (ESTRELLA) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -158,10 +184,8 @@
             width: 100%;
             height: 100%;
             background: rgba(26, 26, 46, 0.95);
-            /* Fondo oscuro casi opaco */
             backdrop-filter: blur(5px);
             display: none;
-            /* Oculto por defecto */
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -171,7 +195,6 @@
         .star-icon {
             font-size: 4rem;
             margin-bottom: 15px;
-            display: inline-block;
             animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
@@ -199,63 +222,112 @@
 
 <body>
 
+    <div id="successModal" class="modal-overlay">
+        <div class="login-container" style="max-width: 350px; text-align: center; border-color: #00d4ff;">
+            <div class="star-icon">⭐</div>
+            <h2 style="color: #00d4ff; margin-bottom: 10px;">¡Fichaje Completado!</h2>
+            <p id="successMessage" style="margin-bottom: 25px; opacity: 0.8;">Tu registro se ha realizado con éxito.</p>
+            <button id="btnVolverLogin" class="login-btn">Ir a la Zona Mixta</button>
+        </div>
+    </div>
+
     <div class="login-container">
         <div class="header">
-            <h1>Regístrate aquí</h1>
-            <p>Solicita tu acceso al vestuario</p>
+            <h1>Registro Prensa</h1>
+            <p>Solicita tu acceso a la zona mixta</p>
         </div>
 
-        <form id="registroForm">
+        <div class="tabs">
+            <div class="tab active" id="tabEmail">📧 Por Correo</div>
+            <div class="tab" id="tabPhone">📱 Por Teléfono</div>
+        </div>
+
+        <form id="registroEmailForm">
             <div class="form-group">
-                <label for="nombre">Nombre y Apellidos</label>
-                <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
+                <label>Nombre y Apellidos</label>
+                <input type="text" id="nombreEmail" placeholder="Ej: Juan Pérez" required>
             </div>
             <div class="form-group">
-                <label for="medio">Medio de Comunicación</label>
-                <input type="text" id="medio" placeholder="Ej: Diario AS, Cadena SER..." required>
+                <label>Medio de Comunicación deportivo favorito</label>
+                <input type="text" id="medioEmail" placeholder="Ej: Diario AS..." required>
             </div>
 
             <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" placeholder="nombre@prensa.com" required>
+                <label>Correo Electrónico</label>
+                <input type="email" id="emailInput" placeholder="nombre@prensa.com" required>
                 <p id="emailError" class="error-msg">Error en el correo</p>
             </div>
 
             <div class="form-group">
-                <label for="password">Contraseña (Mínimo 6 caracteres)</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <label>Contraseña (Mín. 6 caracteres)</label>
+                <input type="password" id="passEmail" placeholder="••••••••" required>
                 <p id="passError" class="error-msg">Error en la contraseña</p>
             </div>
 
-            <button type="submit" class="login-btn">Crear Cuenta</button>
+            <button type="submit" class="login-btn">Crear Cuenta con Email</button>
         </form>
+
+        <div id="registroPhoneContainer" style="display: none;">
+
+            <div id="stepPhoneA">
+                <div class="form-group">
+                    <label style="color:#00d4ff;">Tu Teléfono Móvil</label>
+                    <input type="tel" id="regPhoneInput" placeholder="+34 600 000 000"
+                        style="text-align: center; font-size: 1.1rem;">
+                    <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">Incluye el prefijo (+34)</p>
+                    <p id="phoneError" class="error-msg">Número inválido</p>
+                </div>
+                <div id="recaptcha-container" style="margin: 15px auto; display: flex; justify-content: center;"></div>
+                <button id="btnSendRegSMS" class="login-btn">Enviar Código de Verificación</button>
+            </div>
+
+            <div id="stepPhoneB" style="display: none;">
+                <div class="form-group">
+                    <label style="color:#2ecc71;">Código SMS</label>
+                    <input type="text" id="smsCodeInput" placeholder="1 2 3 4 5 6"
+                        style="text-align: center; letter-spacing: 5px; font-weight: bold;">
+                    <p id="codeError" class="error-msg">Código incorrecto</p>
+                </div>
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;">
+
+                <div class="form-group">
+                    <label>Nombre y Apellidos</label>
+                    <input type="text" id="nombrePhone" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Medio de Comunicación deportivo favorito</label>
+                    <input type="text" id="medioPhone" placeholder="Tu medio" required>
+                </div>
+                <div class="form-group">
+                    <label>Crea una Contraseña</label>
+                    <input type="password" id="passPhone" placeholder="Para entrar sin SMS luego" required>
+                    <p id="passPhoneError" class="error-msg">La contraseña es muy débil</p>
+                </div>
+
+                <button id="btnFinishPhoneReg" class="login-btn" style="background: #2ecc71; color: white;">Confirmar y
+                    Crear Cuenta</button>
+            </div>
+        </div>
 
         <div class="footer-links">
             <p>¿Ya tienes cuenta? <a href="login.html">Volver al Login</a></p>
         </div>
     </div>
 
-    <div id="successModal" class="modal-overlay">
-        <div class="login-container" style="max-width: 350px; text-align: center; border-color: #00d4ff;">
-
-            <div class="star-icon">⭐</div>
-
-            <h2 style="color: #00d4ff; margin-bottom: 10px; text-transform: uppercase;">¡Fichaje Completado!</h2>
-
-            <p style="margin-bottom: 25px; opacity: 0.8;">
-                Tu registro se ha realizado con éxito. Ya puedes acceder al vestuario.
-            </p>
-
-            <button id="btnVolverLogin" class="login-btn">Volver al Login</button>
-        </div>
-    </div>
     <script type="module">
-        // 1. IMPORTAMOS FIREBASE, AUTH Y FIRESTORE (Base de datos)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            sendEmailVerification,
+            signInWithPhoneNumber,
+            RecaptchaVerifier,
+            EmailAuthProvider,
+            linkWithCredential
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 2. TU CONFIGURACIÓN
+        // CONFIGURACIÓN (RECUERDA QUE SEA LA TUYA)
         const firebaseConfig = {
             apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
             authDomain: "elchivi-9bfcf.firebaseapp.com",
@@ -265,95 +337,176 @@
             appId: "1:571942007751:web:e1ffd9e90c9d749c7c5fe2"
         };
 
-        // 3. INICIALIZAMOS
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app); // Inicializamos la base de datos
+        const db = getFirestore(app);
+        auth.languageCode = 'es';
 
-        // 4. LÓGICA DEL FORMULARIO
-        const registroForm = document.getElementById('registroForm');
+        // --- SISTEMA DE PESTAÑAS ---
+        const tabEmail = document.getElementById('tabEmail');
+        const tabPhone = document.getElementById('tabPhone');
+        const formEmail = document.getElementById('registroEmailForm');
+        const formPhone = document.getElementById('registroPhoneContainer');
 
-        registroForm.addEventListener('submit', async (e) => {
+        // Función para mostrar errores de forma bonita (Vibración y Rojo)
+        const mostrarError = (inputId, msgId, texto) => {
+            const input = document.getElementById(inputId);
+            const msgElement = document.getElementById(msgId);
+
+            input.classList.add('input-error'); // Temblor y Rojo
+            input.focus();
+            if (msgElement) {
+                msgElement.textContent = texto;
+                msgElement.style.display = 'block';
+            }
+
+            // Al escribir, quitar el error
+            input.addEventListener('input', () => {
+                input.classList.remove('input-error');
+                if (msgElement) msgElement.style.display = 'none';
+            }, { once: true });
+        };
+
+        const initRecaptcha = () => {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'normal',
+                    'callback': () => console.log("Captcha OK")
+                });
+                window.recaptchaVerifier.render();
+            }
+        };
+
+        tabEmail.addEventListener('click', () => {
+            tabEmail.classList.add('active'); tabPhone.classList.remove('active');
+            formEmail.style.display = 'block'; formPhone.style.display = 'none';
+        });
+
+        tabPhone.addEventListener('click', () => {
+            tabPhone.classList.add('active'); tabEmail.classList.remove('active');
+            formPhone.style.display = 'block'; formEmail.style.display = 'none';
+            initRecaptcha();
+        });
+
+
+        // --- LÓGICA 1: REGISTRO EMAIL (CON ERRORES VISUALES) ---
+        document.getElementById('registroEmailForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            const nombre = document.getElementById('nombre').value;
-            const medio = document.getElementById('medio').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const nombre = document.getElementById('nombreEmail').value;
+            const medio = document.getElementById('medioEmail').value;
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passEmail').value;
 
             try {
-                // Paso 1: Crear el usuario en Firebase Authentication (Email y Contraseña)
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
-
-                // 2. ENVIAR CORREO DE VERIFICACIÓN (NUEVO)
                 await sendEmailVerification(user);
 
-                // Paso 3: Guardar los datos extra en la Base de Datos (Firestore)
-                // Creamos un documento en la colección "periodistas" usando su ID único (user.uid)
                 await setDoc(doc(db, "periodistas", user.uid), {
-                    nombreCompleto: nombre,
-                    medioComunicacion: medio,
-                    correo: email,
-                    fechaRegistro: new Date().toISOString()
+                    nombreCompleto: nombre, medioComunicacion: medio, correo: email,
+                    fechaRegistro: new Date().toISOString(), metodo: "email"
                 });
 
-                // 4. ¡ÉXITO! En lugar de redirigir, mostramos el modal
-                const modal = document.getElementById('successModal');
-
-                modal.querySelector('h2').textContent = "¡Casi estamos dentro!";
-                modal.querySelector('p').innerHTML = `
-                    Hemos enviado un correo de verificación a <strong>${email}</strong>.<br>
-                    Por favor, revisa tu bandeja de entrada (y spam) y confirma tu cuenta para poder acceder.
-                `;
-
-                modal.style.display = 'flex'; // Hacemos visible el pop-up
-
-                // 5. Configurar el botón del modal para ir al login
-                document.getElementById('btnVolverLogin').addEventListener('click', () => {
-                    window.location.href = "login.html";
-                });
-
+                showSuccessModal("Te hemos enviado un correo de verificación. Revísalo antes de entrar.");
             } catch (error) {
-                console.error("Error en el registro:", error.code);
-
-                // Referencias a los campos y textos de error
-                const emailInput = document.getElementById('email');
-                const passInput = document.getElementById('password');
-                const emailMsg = document.getElementById('emailError');
-                const passMsg = document.getElementById('passError');
-
-                // Función auxiliar para mostrar el error en un campo concreto
-                const mostrarError = (input, msgElement, texto) => {
-                    input.classList.add('input-error'); // Rojo y vibración
-                    input.value = ''; // Borramos lo escrito (opcional)
-                    input.focus();    // Ponemos el cursor ahí
-                    msgElement.textContent = texto; // Ponemos el texto específico
-                    msgElement.style.display = 'block'; // Lo hacemos visible
-
-                    // Al escribir de nuevo, quitamos el error
-                    input.addEventListener('input', () => {
-                        input.classList.remove('input-error');
-                        msgElement.style.display = 'none';
-                    }, { once: true });
-                };
-
-                // LÓGICA DE ERRORES ESPECÍFICOS
+                console.error(error.code);
                 if (error.code === 'auth/email-already-in-use') {
-                    mostrarError(emailInput, emailMsg, "Ese correo ya está registrado.");
-                }
-                else if (error.code === 'auth/weak-password') {
-                    mostrarError(passInput, passMsg, "La contraseña debe tener al menos 6 caracteres.");
-                }
-                else if (error.code === 'auth/invalid-email') {
-                    mostrarError(emailInput, emailMsg, "El formato del correo no es correcto.");
-                }
-                else {
-                    // Si es otro error raro, usamos un alert clásico por seguridad
-                    alert("Error desconocido: " + error.message);
+                    mostrarError('emailInput', 'emailError', "Este correo ya está registrado.");
+                } else if (error.code === 'auth/weak-password') {
+                    mostrarError('passEmail', 'passError', "Mínimo 6 caracteres.");
+                } else if (error.code === 'auth/invalid-email') {
+                    mostrarError('emailInput', 'emailError', "Formato de correo inválido.");
+                } else {
+                    alert("Error: " + error.message);
                 }
             }
         });
+
+
+        // --- LÓGICA 2: REGISTRO TELÉFONO (CON ERRORES VISUALES) ---
+        const APP_DOMAIN = "@elchivatazosport.app";
+
+        // A. Enviar SMS
+        document.getElementById('btnSendRegSMS').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('regPhoneInput').value.replace(/\s/g, '');
+
+            try {
+                const confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+                window.confirmationResult = confirmationResult;
+
+                document.getElementById('stepPhoneA').style.display = 'none';
+                document.getElementById('stepPhoneB').style.display = 'block';
+            } catch (error) {
+                console.error(error);
+                mostrarError('regPhoneInput', 'phoneError', "Error al enviar SMS. Verifica el número.");
+                window.recaptchaVerifier.render().then(id => grecaptcha.reset(id));
+            }
+        });
+
+        // B. Confirmar y Crear
+        document.getElementById('btnFinishPhoneReg').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('smsCodeInput').value;
+            const nombre = document.getElementById('nombrePhone').value;
+            const medio = document.getElementById('medioPhone').value;
+            const pass = document.getElementById('passPhone').value;
+
+            if (pass.length < 6) {
+                mostrarError('passPhone', 'passPhoneError', "La contraseña debe tener 6 caracteres.");
+                return;
+            }
+
+            try {
+                // 1. Validar Código SMS
+                const result = await window.confirmationResult.confirm(code);
+                const user = result.user;
+
+                // 2. Crear credencial de contraseña
+                const dummyEmail = user.phoneNumber + APP_DOMAIN;
+                const credential = EmailAuthProvider.credential(dummyEmail, pass);
+
+                // 3. Vincular
+                await linkWithCredential(user, credential);
+
+                // 4. Guardar datos
+                await setDoc(doc(db, "periodistas", user.uid), {
+                    nombreCompleto: nombre, medioComunicacion: medio, telefono: user.phoneNumber,
+                    emailFicticio: dummyEmail, fechaRegistro: new Date().toISOString(), metodo: "telefono_hibrido"
+                });
+
+                showSuccessModal("Cuenta creada. Ahora puedes entrar con tu Teléfono y esa Contraseña.");
+
+            } catch (error) {
+                console.error(error);
+                if (error.code === 'auth/invalid-verification-code') {
+                    mostrarError('smsCodeInput', 'codeError', "El código SMS es incorrecto.");
+                } else if (error.code === 'auth/credential-already-in-use') {
+                    alert("Este número ya está registrado. Ve al Login.");
+                } else {
+                    alert("Error: " + error.message);
+                }
+            }
+        });
+
+        // UTILIDAD: Mostrar Modal Éxito
+        const showSuccessModal = (msg) => {
+            const modal = document.getElementById('successModal');
+            document.getElementById('successMessage').textContent = msg;
+            modal.style.display = 'flex';
+
+            // Cerrar al hacer clic fuera (fondo oscuro)
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    window.location.href = "login.html";
+                }
+            });
+
+            document.getElementById('btnVolverLogin').addEventListener('click', () => {
+                window.location.href = "login.html";
+            });
+        };
+
     </script>
 </body>
 

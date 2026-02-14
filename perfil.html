@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PressRoom | Vestuario Periodístico</title>
+    <title>PressRoom | Zona Mixta Periodística</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Fusionamos las fuentes y el fondo oscuro */
@@ -120,6 +120,36 @@
             /* Texto oscuro al pasar el ratón */
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 25, 0.95);
+            /* Fondo oscuro profundo */
+            backdrop-filter: blur(10px);
+            display: none;
+            /* Se activa con flex desde JS */
+            justify-content: center;
+            /* Centrado horizontal */
+            align-items: center;
+            /* Centrado vertical */
+            z-index: 9999;
+            /* Por encima de todo */
+        }
+
+        /* Estilo para que los inputs del modal se vean bien */
+        .modal-overlay input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00d4ff;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+        }
     </style>
 </head>
 
@@ -229,7 +259,7 @@
                 </svg>
             </div>
 
-            <h3 class="text-xl font-black text-white mb-2 tracking-wide">¿Abandonar el vestuario?</h3>
+            <h3 class="text-xl font-black text-white mb-2 tracking-wide">¿Abandonar la zona mixta?</h3>
             <p class="text-slate-300 text-sm mb-8">¿Estás seguro de que quieres cerrar tu sesión actual?</p>
 
             <div class="flex justify-between gap-4">
@@ -266,9 +296,56 @@
         </div>
     </div>
 
+    <div id="resetPasswordModal"
+        class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
+        <div
+            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
+
+            <div
+                class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#00d4ff]/10 mb-6 border border-[#00d4ff]/20">
+                <svg class="h-8 w-8 text-[#00d4ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-black text-white mb-2 tracking-wide uppercase">Nueva Seguridad</h3>
+            <p class="text-slate-300 text-sm mb-6">Has entrado vía SMS. Define una contraseña para tus próximos accesos.
+            </p>
+
+            <div class="space-y-4 mb-8">
+                <input type="password" id="newPasswordInput" placeholder="Mínimo 6 caracteres"
+                    class="w-full bg-black/30 border border-[#00d4ff]/30 rounded-lg p-3 text-white text-center focus:outline-none focus:border-[#00d4ff] transition">
+            </div>
+
+            <button id="btnSaveNewPassword"
+                class="w-full py-3 rounded-lg font-bold bg-cyan-custom text-[#1a1a2e] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition uppercase tracking-tighter">
+                Actualizar Contraseña
+            </button>
+        </div>
+    </div>
+
+    <div id="successPassModal"
+        class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
+        <div
+            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
+
+            <div class="text-6xl mb-6 drop-shadow-[0_0_15px_rgba(0,212,255,0.5)]">⭐</div>
+
+            <h3 class="text-2xl font-black text-[#00d4ff] mb-2 tracking-wide uppercase">¡Todo Listo!</h3>
+            <p class="text-slate-300 text-sm mb-8">Tu contraseña ha sido actualizada. Ya puedes operar con normalidad en
+                la zona mixta.</p>
+
+            <button id="btnFinishSuccess"
+                class="w-full py-3 rounded-lg font-bold bg-cyan-custom text-[#1a1a2e] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition uppercase">
+                Entrar al Perfil
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, linkWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -292,45 +369,33 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- EL PORTERO 3.0: VERIFICACIÓN + LIMPIEZA AUTOMÁTICA ---
+                // --- AQUÍ EMPIEZA EL PORTERO 4.1 ---
 
-                if (!user.emailVerified) {
+                // 1. Detectamos el tipo de usuario
+                const esUsuarioTelefono = user.phoneNumber !== null;
+                const esEmailVerificado = user.emailVerified === true;
 
-                    // 1. CALCULAMOS EL TIEMPO
+                // 2. Filtro de seguridad
+                if (!esUsuarioTelefono && !esEmailVerificado) {
+
                     const fechaCreacion = new Date(user.metadata.creationTime).getTime();
                     const ahora = new Date().getTime();
-                    const sieteDiasEnMs = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
+                    const sieteDiasEnMs = 7 * 24 * 60 * 60 * 1000;
 
-                    // 2. ¿HA PASADO MÁS DE UNA SEMANA?
                     if (ahora - fechaCreacion > sieteDiasEnMs) {
-
-                        // ¡SI! La cuenta ha caducado. LA ELIMINAMOS.
                         try {
-                            // Intentamos borrar el usuario de Firebase Auth
                             await user.delete();
-
-                            // (Opcional) Si quieres ser muy limpio, aquí podrías borrar también 
-                            // el documento de Firestore, pero requiere más código. 
-                            // Con borrar el acceso (Auth) suele bastar.
-
-                            alert("⌛ TPO. AGOTADO\n\nTu solicitud de registro ha caducado (límite de 7 días sin verificar).\nLa cuenta ha sido eliminada por seguridad.\n\nPor favor, regístrate de nuevo.");
-                            window.location.href = "registro.html"; // Lo mandamos a registrarse
-
+                            alert("⌛ TPO. AGOTADO\n\nTu solicitud de registro ha caducado.\nLa cuenta ha sido eliminada por seguridad.");
+                            window.location.href = "registro.html";
                         } catch (error) {
-                            console.error("Error al borrar cuenta caducada:", error);
-                            // Si falla el borrado (raro), al menos cerramos sesión
+                            console.error("Error al borrar:", error);
                             await signOut(auth);
                             window.location.href = "login.html";
                         }
-                        return; // Detenemos todo aquí
+                        return;
                     }
 
-                    // 3. SI AÚN NO HA PASADO LA SEMANA, MOSTRAMOS EL AVISO NORMAL
                     const verifyModal = document.getElementById('verificationModal');
-
-                    // (Opcional) Personalizamos el mensaje para decirle cuánto le queda
-                    // verifyModal.querySelector('p').innerHTML += "<br><br><small>Tienes 7 días para verificarla.</small>";
-
                     verifyModal.classList.remove('hidden');
 
                     document.getElementById('btnBackToLogin').addEventListener('click', async () => {
@@ -338,7 +403,43 @@
                         window.location.href = "login.html";
                     });
 
-                    return; // Detenemos el código
+                    return; // Bloqueamos el resto de la carga si no pasa el filtro
+                }
+
+                // --- DETECTAR SI ENTRÓ POR SMS PARA PEDIR NUEVA CONTRASEÑA ---
+                const entroConSMS = user.providerData.some(p => p.providerId === 'phone');
+                const yaCambiado = sessionStorage.getItem('passwordCambiado');
+
+                if (entroConSMS && !yaCambiado) {
+                    const resetModal = document.getElementById('resetPasswordModal');
+                    const successModal = document.getElementById('successPassModal');
+
+                    if (resetModal) {
+                        // Lo mostramos usando las clases de Tailwind
+                        resetModal.classList.remove('hidden');
+                        resetModal.classList.add('flex');
+
+                        document.getElementById('btnSaveNewPassword').onclick = async () => {
+                            const newPass = document.getElementById('newPasswordInput').value;
+                            if (newPass.length < 6) { alert("La contraseña debe ser de al menos 6 caracteres"); return; }
+
+                            try {
+                                await updatePassword(user, newPass);
+                                sessionStorage.setItem('passwordCambiado', 'true');
+
+                                resetModal.classList.add('hidden');
+                                successModal.classList.remove('hidden');
+                                successModal.classList.add('flex');
+
+                                document.getElementById('btnFinishSuccess').onclick = () => {
+                                    successModal.classList.add('hidden');
+                                };
+
+                            } catch (error) {
+                                alert("Error: " + error.message);
+                            }
+                        };
+                    }
                 }
 
                 userEmail.textContent = user.email; // Ponemos el correo visible

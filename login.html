@@ -164,34 +164,78 @@
 
     <div class="login-container">
         <div class="header">
-            <h1>El Chivatazo Sport
-            </h1>
-            <p>Acceso Exclusivo para Prensa</p>
+            <h1>Zona Mixta</h1>
+            <p>Acceso a Prensa Deportiva</p>
         </div>
 
-        <form action="#">
-            <div class="form-group">
-                <label for="email">Credencial o Correo</label>
-                <input type="email" id="email" placeholder="nombre@prensa.com" required>
-            </div>
+        <div id="emailFormContainer">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico o Teléfono</label>
+                    <input type="text" id="email" placeholder="nombre@prensa.com o 600..." required>
+                </div>
 
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••" required>
-                <p id="loginErrorMsg" class="error-msg">Usuario o contraseña incorrectos</p>
-            </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <p id="loginErrorMsg" class="error-msg">Credenciales incorrectas</p>
+                </div>
 
-            <button type="submit" class="login-btn">Entrar al Vestuario</button>
-            <button type="button" id="googleLogin" class="login-btn"
-                style="background: white; color: #1a1a2e; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                Entrar con Google
+                <p style="text-align: right; margin-bottom: 15px; font-size: 0.8rem;">
+                    <a href="recuperar.html" style="color: #00d4ff; text-decoration: none;">¿Olvidaste la
+                        contraseña?</a>
+                </p>
+
+                <button type="submit" class="login-btn">Entrar a la Zona Mixta</button>
+            </form>
+
+            <button id="googleBtn" class="login-btn"
+                style="background: white; color: #333; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+                Acceder con Google
             </button>
-        </form>
 
-        <div class="footer-links">
-            <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
-            <p><a href="recuperar.html">¿Olvidaste tu contraseña?</a></p>
+            <p
+                style="margin-top: 25px; text-align: center; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                ¿Eres usuario de móvil y olvidaste tu contraseña? <br>
+                <a href="#" id="btnSwitchToPhone" style="color:#00d4ff; font-weight: bold;">🔑 Recuperar contraseña con
+                    SMS</a>
+            </p>
+
+            <div class="footer-links">
+                <p>¿No tienes pase? <a href="registro.html">Regístrate aquí</a></p>
+            </div>
+        </div>
+
+        <div id="phoneFormContainer" style="display: none;">
+            <div id="stepRequestCode">
+                <div class="form-group">
+                    <label style="color: #00d4ff;">Introduce tu Teléfono</label>
+                    <input type="tel" id="phoneNumber" placeholder="+34 600 000 000"
+                        style="font-size: 1.2rem; letter-spacing: 1px; text-align: center;">
+                    <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">Incluye el prefijo (+34 para España)
+                    </p>
+                </div>
+                <div id="recaptcha-container" style="margin: 15px auto; display: flex; justify-content: center;"></div>
+
+                <button id="btnSendCode" class="login-btn">Enviar Código SMS</button>
+            </div>
+
+            <div id="stepVerifyCode" style="display: none;">
+                <div class="form-group">
+                    <label style="color: #2ecc71;">Código de Verificación</label>
+                    <input type="text" id="verificationCode" placeholder="1 2 3 4 5 6"
+                        style="text-align: center; letter-spacing: 8px; font-size: 1.5rem; font-weight: bold;">
+                </div>
+                <button id="btnVerifyCode" class="login-btn" style="background: #2ecc71; color: white;">Confirmar
+                    Acceso</button>
+            </div>
+
+            <p
+                style="margin-top: 20px; text-align: center; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <a href="#" id="btnSwitchToEmail" style="color:#aaa; text-decoration: none;">↩ Volver al Login
+                    habitual</a>
+            </p>
         </div>
     </div>
 
@@ -202,96 +246,167 @@
             signInWithEmailAndPassword,
             GoogleAuthProvider,
             signInWithPopup,
-            sendPasswordResetEmail
+            signInWithPhoneNumber,
+            RecaptchaVerifier
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // 2. TUS CREDENCIALES (YA CONFIGURADAS)
+        // CONFIGURACIÓN
         const firebaseConfig = {
             apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
             authDomain: "elchivi-9bfcf.firebaseapp.com",
             projectId: "elchivi-9bfcf",
             storageBucket: "elchivi-9bfcf.firebasestorage.app",
             messagingSenderId: "571942007751",
-            appId: "1:571942007751:web:e1ffd9e90c9d749c7c5fe2",
-            measurementId: "G-TX42MBRHYZ"
+            appId: "1:571942007751:web:e1ffd9e90c9d749c7c5fe2"
         };
 
-        // 3. INICIALIZAMOS EL MOTOR
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        auth.languageCode = 'es';
 
-        // 4. CAPTURAMOS LOS ELEMENTOS DEL HTML
-        const loginForm = document.querySelector('form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
+        // REFERENCIAS HTML
+        const emailContainer = document.getElementById('emailFormContainer');
+        const phoneContainer = document.getElementById('phoneFormContainer');
 
-        // 5. LA LÓGICA DEL BOTÓN
+        // --- FUNCIÓN PARA INICIAR EL ROBOT (RECAPTCHA) ---
+        // Lo sacamos fuera para llamarlo solo cuando haga falta
+        const initRecaptcha = () => {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'normal',
+                    'callback': (response) => {
+                        console.log("Captcha resuelto");
+                    },
+                    'expired-callback': () => {
+                        console.log("Captcha caducado");
+                    }
+                });
+                // Forzamos el dibujado del robot
+                window.recaptchaVerifier.render();
+            }
+        }
+
+        // --- BOTÓN: IR A SMS ---
+        document.getElementById('btnSwitchToPhone').addEventListener('click', (e) => {
+            e.preventDefault();
+            // 1. Cambiamos la vista
+            emailContainer.style.display = 'none';
+            phoneContainer.style.display = 'block';
+
+            // 2. ¡AHORA SÍ! Despertamos al robot porque ya es visible
+            initRecaptcha();
+        });
+
+        // --- BOTÓN: VOLVER A CORREO ---
+        document.getElementById('btnSwitchToEmail').addEventListener('click', (e) => {
+            e.preventDefault();
+            phoneContainer.style.display = 'none';
+            emailContainer.style.display = 'block';
+        });
+
+        // --- LÓGICA DE TELÉFONO ---
+
+        // 1. ENVIAR CÓDIGO
+        document.getElementById('btnSendCode').addEventListener('click', () => {
+            // Limpiamos espacios en blanco del número por si acaso
+            const rawPhoneNumber = document.getElementById('phoneNumber').value;
+            const phoneNumber = rawPhoneNumber.replace(/\s/g, '');
+
+            const appVerifier = window.recaptchaVerifier;
+
+            if (!phoneNumber || phoneNumber.length < 9) {
+                alert("Por favor, escribe un número válido (ej: +34600000000)");
+                return;
+            }
+
+            signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    // ¡ÉXITO!
+                    window.confirmationResult = confirmationResult;
+
+                    // Ocultamos el número y mostramos el campo del código
+                    document.getElementById('stepRequestCode').style.display = 'none';
+                    document.getElementById('stepVerifyCode').style.display = 'block';
+
+                    // AQUI es donde debes poner el código 123456
+                    console.log("SMS enviado (o simulado si es número de prueba)");
+                }).catch((error) => {
+                    console.error("Error SMS:", error);
+                    alert("Error: " + error.message + "\n\n(Asegúrate de que el dominio está autorizado en Firebase)");
+                });
+        });
+
+        // 2. CONFIRMAR CÓDIGO
+        document.getElementById('btnVerifyCode').addEventListener('click', () => {
+            const code = document.getElementById('verificationCode').value;
+
+            if (!code) return;
+
+            window.confirmationResult.confirm(code).then((result) => {
+                const user = result.user;
+                window.location.href = "perfil.html";
+            }).catch((error) => {
+                alert("Código incorrecto.");
+            });
+        });
+
+
+        // --- LÓGICA ANTIGUA (LOGIN CORREO) ---
+        // (Mantenemos esto igual que antes)
+        // --- LÓGICA DE LOGIN HÍBRIDO (CORREO O TELÉFONO + PASS) ---
+        const loginForm = document.getElementById('loginForm');
+
         loginForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Evita que la página se recargue
+            e.preventDefault();
 
-            const email = emailInput.value;
-            const password = passwordInput.value;
+            const inputVal = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorText = document.getElementById('loginErrorMsg');
+            const inputs = document.querySelectorAll('#email, #password');
 
-            console.log("Intentando entrar al vestuario...");
+            // IMPORTANTE: Este dominio debe ser igual al que pongas en registro.html
+            const APP_DOMAIN = "@elchivatazosport.app";
+            let finalEmail = inputVal;
 
-            // Llamamos a Firebase para loguear
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+            // Si el usuario no escribe una '@', el código asume que es su teléfono
+            if (!inputVal.includes('@')) {
+                const cleanPhone = inputVal.replace(/\s/g, ''); // Quitamos espacios
+                finalEmail = cleanPhone + APP_DOMAIN; // Lo convertimos en el email falso
+            }
 
-                    // Aquí pones la web a la que quieres que vaya tras el login
+            signInWithEmailAndPassword(auth, finalEmail, password)
+                .then(() => {
                     window.location.href = "perfil.html";
                 })
                 .catch((error) => {
-                    // SI HAY UN ERROR (Contraseña mal, usuario no existe, etc.)
-                    console.error("Error detectado:", error.code);
-
-                    // 1. Capturamos los elementos visuales
-                    const errorText = document.getElementById('loginErrorMsg');
-                    const inputs = [emailInput, passwordInput];
-
-                    // 2. Activamos el modo "Error Visual"
+                    console.error("Error login:", error.code);
                     inputs.forEach(input => {
-                        input.classList.add('input-error'); // Pone rojo y vibra
-                        input.value = ''; // Borra lo escrito
+                        input.classList.add('input-error');
+                        input.value = '';
                     });
-
-                    // 3. Mostramos el mensaje debajo
                     errorText.style.display = 'block';
 
-                    // 4. TRUCO PRO: Si el usuario empieza a escribir de nuevo, quitamos el rojo y el error
-                    // Esto mejora mucho la sensación de "volver a intentar"
+                    // Quitar el rojo cuando el usuario vuelva a escribir
                     inputs.forEach(input => {
                         input.addEventListener('input', () => {
                             input.classList.remove('input-error');
                             errorText.style.display = 'none';
-                        }, { once: true }); // {once: true} hace que esto se ejecute solo una vez por fallo
+                        }, { once: true });
                     });
-
-                    // (Opcional) Ponemos el foco en el email para que vuelva a escribir rápido
-                    emailInput.focus();
                 });
         });
-        // AÑADE "GoogleAuthProvider" y "signInWithPopup" a tu lista de imports arriba
 
-
-        // ... (donde ya tenías el initializeApp y auth) ...
+        // Login Google
+        const googleBtn = document.getElementById('googleBtn');
         const provider = new GoogleAuthProvider();
-        const googleBtn = document.getElementById('googleLogin');
-
-        // Lógica para el botón de Google
         googleBtn.addEventListener('click', async () => {
             try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-
+                await signInWithPopup(auth, provider);
                 window.location.href = "perfil.html";
-
             } catch (error) {
                 console.error("Google Error", error.code);
-                alert("Oops, something went wrong: " + error.message);
             }
         });
-
     </script>
 </body>
 
