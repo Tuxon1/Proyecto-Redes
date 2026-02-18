@@ -47,13 +47,19 @@
             padding: 0 4px;
         }
 
+        /* CONFIGURACIÓN DE LAS ZONAS DE IMAGEN */
         .upload-zone {
-            cursor: pointer;
             position: relative;
             overflow: hidden;
+            transition: 0.3s;
         }
 
-        .upload-zone:hover::after {
+        /* Clases que SOLO funcionan cuando el modo edición está activo */
+        .edit-mode-active .upload-zone {
+            cursor: pointer;
+        }
+
+        .edit-mode-active .upload-zone:hover::after {
             content: "CAMBIAR IMAGEN 📷";
             position: absolute;
             inset: 0;
@@ -64,6 +70,14 @@
             color: #00d4ff;
             font-weight: bold;
             font-size: 0.8rem;
+        }
+
+        /* Estilo visual para campos editables */
+        .edit-mode-active [contenteditable="true"] {
+            background: rgba(0, 212, 255, 0.05);
+            border-bottom: 1px dashed #00d4ff;
+            padding-bottom: 2px;
+            outline: none;
         }
 
         /* Avatar circular con el diseño propuesto */
@@ -78,29 +92,16 @@
             font-size: 4rem;
             margin-bottom: 15px;
             color: #ffcc00;
-            /* Amarillo Peligro */
             animation: pulse-warning 1.5s infinite;
             text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
 
         @keyframes pulse-warning {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Botón específico para volver */
         .btn-return {
             background: transparent;
             border: 1px solid #ffcc00;
@@ -117,7 +118,6 @@
         .btn-return:hover {
             background: #ffcc00;
             color: #1a1a2e;
-            /* Texto oscuro al pasar el ratón */
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
 
@@ -128,19 +128,13 @@
             width: 100%;
             height: 100%;
             background: rgba(10, 10, 25, 0.95);
-            /* Fondo oscuro profundo */
             backdrop-filter: blur(10px);
             display: none;
-            /* Se activa con flex desde JS */
             justify-content: center;
-            /* Centrado horizontal */
             align-items: center;
-            /* Centrado vertical */
             z-index: 9999;
-            /* Por encima de todo */
         }
 
-        /* Estilo para que los inputs del modal se vean bien */
         .modal-overlay input {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid #00d4ff;
@@ -180,6 +174,12 @@
 
                     <div id="dropdownMenu"
                         class="hidden absolute right-0 mt-2 w-48 bg-[#1a1a2e] border border-[#00d4ff]/30 rounded-xl shadow-2xl overflow-hidden">
+                        
+                        <div id="editProfileBtn"
+                            class="px-4 py-3 text-[#00d4ff] hover:bg-[#00d4ff]/10 cursor-pointer transition font-bold flex items-center gap-2 border-b border-[#00d4ff]/20">
+                            ✏️ Editar Perfil
+                        </div>
+
                         <div id="logoutBtn"
                             class="px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer transition font-bold flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -192,7 +192,7 @@
                     </div>
                 </div>
 
-                <div class="upload-zone h-60 bg-slate-800" onclick="document.getElementById('input-header').click();">
+                <div id="headerUploadZone" class="upload-zone h-60 bg-slate-800">
                     <img id="header-img" class="w-full h-full object-cover opacity-70"
                         src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
                     <input type="file" id="input-header" class="hidden" accept="image/*"
@@ -201,21 +201,29 @@
 
                 <div class="px-8 pb-8 relative">
                     <div class="flex justify-between items-end -mt-16 mb-4">
-                        <div class="upload-zone w-32 h-32 rounded-full avatar-container"
-                            onclick="document.getElementById('input-avatar').click();">
+                        
+                        <div id="avatarUploadZone" class="upload-zone w-32 h-32 rounded-full avatar-container">
                             <img id="userPhoto" class="w-full h-full object-cover rounded-full"
                                 src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
                             <input type="file" id="input-avatar" class="hidden" accept="image/*"
                                 onchange="updateImg(this, 'userPhoto')">
                         </div>
-                        <button
-                            class="bg-cyan-custom px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-[#1a1a2e]">Publicar
-                            Primicia</button>
+                        
+                        <div class="flex gap-2">
+                            <button id="saveProfileBtn"
+                                class="hidden bg-green-500 px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-white">
+                                💾 Guardar
+                            </button>
+                            <button
+                                class="bg-cyan-custom px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-[#1a1a2e]">
+                                Publicar Primicia
+                            </button>
+                        </div>
                     </div>
 
                     <div class="space-y-1">
                         <div class="flex items-center gap-3">
-                            <h1 id="userName" class="text-3xl font-black tracking-tight">Cargando...</h1>
+                            <h1 id="userName" class="text-3xl font-black tracking-tight transition-all">Cargando...</h1>
                             <span
                                 class="bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/50 text-xs font-bold px-2 py-0.5 rounded italic uppercase">Prensa
                                 Verificada</span>
@@ -223,21 +231,21 @@
 
                         <p id="userEmail" class="text-slate-400 text-sm">cargando@correo.com</p>
 
-                        <p id="userMedia" class="text-[#00d4ff] font-bold text-lg pt-3 uppercase tracking-wide">Buscando
+                        <p id="userMedia" class="text-[#00d4ff] font-bold text-lg pt-3 uppercase tracking-wide transition-all">Buscando
                             credenciales...</p>
 
-                        <p class="max-w-2xl text-slate-300 leading-relaxed pt-2" contenteditable="true">
-                            Haz clic aquí para escribir tu biografía profesional o especialidad táctica...
+                        <p id="userBio" class="max-w-2xl text-slate-300 leading-relaxed pt-2 transition-all">
+                            Tu biografía profesional o especialidad táctica aparecerá aquí. Haz clic en "Editar Perfil" en el menú para cambiarla.
                         </p>
                     </div>
 
                     <div class="flex gap-12 mt-8 border-t border-white/10 pt-6 font-black">
                         <div>
-                            <p class="text-3xl text-cyan-glow" contenteditable="true">1.2K</p>
+                            <p class="text-3xl text-cyan-glow">1.2K</p>
                             <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Lectores</p>
                         </div>
                         <div>
-                            <p class="text-3xl text-cyan-glow" contenteditable="true">45</p>
+                            <p class="text-3xl text-cyan-glow">45</p>
                             <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Primicias</p>
                         </div>
                     </div>
@@ -346,7 +354,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, linkWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        // IMPORTANTE: ¡Hemos añadido updateDoc aquí!
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
@@ -366,18 +376,15 @@
         const userEmail = document.getElementById('userEmail');
         const userMedia = document.getElementById('userMedia');
         const userPhoto = document.getElementById('userPhoto');
+        const userBio = document.getElementById('userBio');
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- AQUÍ EMPIEZA EL PORTERO 4.1 ---
-
-                // 1. Detectamos el tipo de usuario
+                // Filtros de Seguridad y Validaciones (No Verificado, Expirado, Pass por SMS...)
                 const esUsuarioTelefono = user.phoneNumber !== null;
                 const esEmailVerificado = user.emailVerified === true;
 
-                // 2. Filtro de seguridad
                 if (!esUsuarioTelefono && !esEmailVerificado) {
-
                     const fechaCreacion = new Date(user.metadata.creationTime).getTime();
                     const ahora = new Date().getTime();
                     const sieteDiasEnMs = 7 * 24 * 60 * 60 * 1000;
@@ -403,10 +410,9 @@
                         window.location.href = "login.html";
                     });
 
-                    return; // Bloqueamos el resto de la carga si no pasa el filtro
+                    return;
                 }
 
-                // --- DETECTAR SI ENTRÓ POR SMS PARA PEDIR NUEVA CONTRASEÑA ---
                 const entroConSMS = user.providerData.some(p => p.providerId === 'phone');
                 const yaCambiado = sessionStorage.getItem('passwordCambiado');
 
@@ -415,7 +421,6 @@
                     const successModal = document.getElementById('successPassModal');
 
                     if (resetModal) {
-                        // Lo mostramos usando las clases de Tailwind
                         resetModal.classList.remove('hidden');
                         resetModal.classList.add('flex');
 
@@ -434,7 +439,6 @@
                                 document.getElementById('btnFinishSuccess').onclick = () => {
                                     successModal.classList.add('hidden');
                                 };
-
                             } catch (error) {
                                 alert("Error: " + error.message);
                             }
@@ -442,13 +446,13 @@
                     }
                 }
 
-                userEmail.textContent = user.email; // Ponemos el correo visible
+                // Carga de Datos Básicos
+                userEmail.textContent = user.email;
 
-                // Si viene de Google, ya tiene nombre y foto
                 if (user.displayName) userName.textContent = user.displayName;
-                if (user.photoURL) userPhoto.src = user.photoURL.replace("=s96-c", "=s400-c"); // Foto en alta calidad
+                if (user.photoURL) userPhoto.src = user.photoURL.replace("=s96-c", "=s400-c");
 
-                // Buscar datos extra en Firestore (Medio y Nombre de registro)
+                // Buscar datos extra en Firestore (Nombre, Medio y Biografía)
                 try {
                     const docRef = doc(db, "periodistas", user.uid);
                     const docSnap = await getDoc(docRef);
@@ -457,6 +461,11 @@
                         const datos = docSnap.data();
                         userName.textContent = datos.nombreCompleto || userName.textContent;
                         userMedia.textContent = datos.medioComunicacion || "Freelance";
+                        
+                        // Añadida la carga de la Biografía
+                        if (datos.biografia) {
+                            userBio.textContent = datos.biografia;
+                        }
                     } else {
                         userMedia.textContent = "Sin medio asignado";
                     }
@@ -464,28 +473,101 @@
                     console.error("Error Firestore:", error);
                 }
             } else {
-                window.location.href = "login.html"; // Redirigir al login si no hay sesión
+                window.location.href = "login.html";
             }
         });
+
+
+        // ==========================================
+        // --- NUEVA LÓGICA DE EDICIÓN DE PERFIL ---
+        // ==========================================
+        let isEditMode = false;
+        
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const headerUploadZone = document.getElementById('headerUploadZone');
+        const avatarUploadZone = document.getElementById('avatarUploadZone');
+
+        // 1. Activar Modo Edición
+        editProfileBtn.addEventListener('click', () => {
+            isEditMode = true;
+            document.body.classList.add('edit-mode-active');
+            
+            // Habilitamos los textos para escribirlos
+            userName.contentEditable = "true";
+            userMedia.contentEditable = "true";
+            userBio.contentEditable = "true";
+            
+            // Mostrar botón Guardar
+            saveProfileBtn.classList.remove('hidden');
+            
+            // Ocultar el menú desplegable
+            document.getElementById('dropdownMenu').classList.add('hidden');
+            
+            // Ponemos el cursor en el nombre automáticamente
+            userName.focus(); 
+        });
+
+        // 2. Controlar clics en las fotos (solo se abren si estamos en modo edición)
+        headerUploadZone.addEventListener('click', () => {
+            if(isEditMode) document.getElementById('input-header').click();
+        });
+        
+        avatarUploadZone.addEventListener('click', () => {
+            if(isEditMode) document.getElementById('input-avatar').click();
+        });
+
+        // 3. Guardar Datos en Firebase
+        saveProfileBtn.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if(!user) return;
+
+            saveProfileBtn.textContent = "⏳ Guardando...";
+
+            try {
+                // Actualizar los textos en Firestore
+                const docRef = doc(db, "periodistas", user.uid);
+                await updateDoc(docRef, {
+                    nombreCompleto: userName.textContent.trim(),
+                    medioComunicacion: userMedia.textContent.trim(),
+                    biografia: userBio.textContent.trim()
+                });
+
+                // Salir del modo edición
+                isEditMode = false;
+                document.body.classList.remove('edit-mode-active');
+                
+                // Deshabilitar textos
+                userName.contentEditable = "false";
+                userMedia.contentEditable = "false";
+                userBio.contentEditable = "false";
+                
+                // Restaurar botón Guardar a su estado original (oculto)
+                saveProfileBtn.classList.add('hidden');
+                saveProfileBtn.textContent = "💾 Guardar";
+
+                alert("¡Perfil actualizado correctamente!");
+
+            } catch (error) {
+                console.error("Error al actualizar perfil:", error);
+                alert("Hubo un error al guardar los datos.");
+                saveProfileBtn.textContent = "💾 Guardar";
+            }
+        });
+
 
         // --- LÓGICA DEL MODAL DE CERRAR SESIÓN ---
         const logoutModal = document.getElementById('logoutModal');
 
-        // 1. Al hacer clic en "Cerrar Sesión" abrimos el pop-up
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            // Ocultamos el menú de 3 puntos directamente para evitar errores
             document.getElementById('dropdownMenu').classList.add('hidden');
-
-            // Mostramos el pop-up
             logoutModal.classList.remove('hidden');
         });
 
-        // 2. Al hacer clic en "Cancelar", ocultamos el pop-up
         document.getElementById('cancelLogoutBtn').addEventListener('click', () => {
             logoutModal.classList.add('hidden');
         });
 
-        // 3. Al hacer clic en "Confirmar", cerramos la sesión de verdad
         document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "login.html";
@@ -494,10 +576,7 @@
             });
         });
 
-        // 4. Al hacer clic fuera del pop-up (en el fondo oscuro), también lo ocultamos
         logoutModal.addEventListener('click', (e) => {
-            // Comprobamos que el clic ha sido exactamente en el fondo (logoutModal) 
-            // y no dentro de la tarjeta blanca o los botones
             if (e.target === logoutModal) {
                 logoutModal.classList.add('hidden');
             }
@@ -505,6 +584,7 @@
     </script>
 
     <script>
+        // Función para previsualizar las imágenes en pantalla
         function updateImg(input, imgId) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -512,18 +592,16 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-    </script>
-    <script>
+
+        // Lógica para abrir/cerrar el menú de 3 puntos
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
-        // Mostrar/Ocultar al hacer clic en los 3 puntos
         menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que el clic se propague al documento
+            e.stopPropagation(); 
             dropdownMenu.classList.toggle('hidden');
         });
 
-        // Ocultar si hacemos clic fuera del menú
         document.addEventListener('click', (e) => {
             if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
                 dropdownMenu.classList.add('hidden');
