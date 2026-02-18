@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Chivatazo - Muro Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap');
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            color: white; min-height: 100vh; margin: 0; display: flex; justify-content: center;
+        }
+        .glass-header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-cyan-glow { color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        .notif-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #ff4b2b; border-radius: 50%; border: 2px solid #1e293b; }
+        .is-liked { color: #ef4444 !important; transform: scale(1.1); transition: 0.2s; }
+        .preview-img { max-height: 150px; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Estilos del Modal (Vista Grande) */
+        #modalPost { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        .modal-content { background: #1a1a2e; width: 100%; max-width: 700px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 30px; position: relative; }
+    </style>
+</head>
+<body>
+
+    <div id="modalPost" onclick="cerrarModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button onclick="cerrarModal(null)" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-white">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <aside class="hidden md:flex flex-col w-64 p-6 sticky top-0 h-screen border-r border-white/10">
+        <h1 class="text-2xl font-black italic text-cyan-glow mb-10 tracking-tighter">EL CHIVATAZO</h1>
+        <nav class="space-y-6 flex-1 text-lg">
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-house"></i> <span>Inicio</span></div>
+            <div class="relative flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition" onclick="this.querySelector('.notif-dot').style.display='none'">
+                <div class="relative"><i class="fa-solid fa-bell"></i><div class="notif-dot"></div></div>
+                <span>Notificaciones</span>
+            </div>
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-envelope"></i> <span>Mensajes</span></div>
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-user"></i> <span>Perfil</span></div>
+        </nav>
+        <button onclick="document.getElementById('inputTexto').focus()" class="w-full bg-cyan-500 text-slate-900 font-bold py-3 rounded-full hover:bg-cyan-400 transition shadow-lg">POSTEAR</button>
+    </aside>
+
+    <main class="flex-1 max-w-2xl border-r border-white/10 min-h-screen">
+        <header class="sticky top-0 z-50 glass-header p-4"><h2 class="text-xl font-bold uppercase tracking-widest text-xs text-gray-400">Muro Principal</h2></header>
+
+        <div class="p-4 border-b border-white/10 bg-white/5">
+            <div class="flex gap-4">
+                <div class="w-12 h-12 bg-cyan-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold">YO</div>
+                <div class="flex-1">
+                    <textarea id="inputTexto" rows="3" class="w-full bg-transparent border-none text-xl outline-none resize-none placeholder-white/20 text-white" placeholder="¿Cuál es el chivatazo?"></textarea>
+                    <img id="imgPreview" src="#" class="preview-img">
+                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/5">
+                        <label class="cursor-pointer text-cyan-400 hover:text-cyan-300 text-xl">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" id="inputFoto" class="hidden" accept="image/*" onchange="previewFile()">
+                        </label>
+                        <button onclick="guardarPost()" class="bg-cyan-500 text-slate-900 px-8 py-2 rounded-full font-bold hover:bg-cyan-300 transition">Publicar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="muroDinamico"></div>
+    </main>
+
+    <script>
+        let misPosts = JSON.parse(localStorage.getItem('chivatazos_v3')) || [];
+        let imagenBase64 = "";
+
+        function previewFile() {
+            const file = document.getElementById('inputFoto').files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                document.getElementById('imgPreview').src = reader.result;
+                document.getElementById('imgPreview').style.display = "block";
+                imagenBase64 = reader.result;
+            }
+            if (file) reader.readAsDataURL(file);
+        }
+
+        function actualizarMuro() {
+            const contenedor = document.getElementById('muroDinamico');
+            contenedor.innerHTML = '';
+            misPosts.forEach(post => {
+                contenedor.innerHTML += `
+                    <div class="p-5 border-b border-white/5 hover:bg-white/5 transition cursor-pointer" onclick="verPostGrande(${post.id})">
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center font-bold border border-cyan-500/20 uppercase text-xs">${post.autor[0]}</div>
+                            <div class="flex-1">
+                                <span class="font-bold text-sm text-cyan-400">${post.autor}</span>
+                                <p class="text-slate-200 mt-1">${post.texto}</p>
+                                ${post.foto ? `<img src="${post.foto}" class="mt-3 rounded-xl max-h-60 w-full object-cover border border-white/10">` : ''}
+                                <div class="flex gap-12 mt-4 text-white/30 text-sm">
+                                    <button onclick="darLike(event, ${post.id})" class="flex items-center gap-2 hover:text-red-500 transition ${post.liked ? 'is-liked' : ''}">
+                                        <i class="${post.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> <span>${post.likes}</span>
+                                    </button>
+                                    <i class="fa-solid fa-retweet hover:text-emerald-400"></i>
+                                    <i class="fa-solid fa-trash hover:text-white" onclick="borrarPost(event, ${post.id})"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            localStorage.setItem('chivatazos_v3', JSON.stringify(misPosts));
+        }
+
+        function guardarPost() {
+            const input = document.getElementById('inputTexto');
+            if (!input.value.trim() && !imagenBase64) return;
+            misPosts.unshift({ id: Date.now(), autor: 'Periodista Pro', texto: input.value, foto: imagenBase64, likes: 0, liked: false });
+            input.value = ''; imagenBase64 = '';
+            document.getElementById('imgPreview').style.display = "none";
+            actualizarMuro();
+        }
+
+        function darLike(e, id) {
+            e.stopPropagation(); // Evita abrir el modal al dar like
+            const post = misPosts.find(p => p.id === id);
+            post.liked = !post.liked;
+            post.likes += post.liked ? 1 : -1;
+            actualizarMuro();
+        }
+
+        function borrarPost(e, id) {
+            e.stopPropagation();
+            misPosts = misPosts.filter(p => p.id !== id);
+            actualizarMuro();
+        }
+
+        // Lógica de Vista en Grande
+        function verPostGrande(id) {
+            const post = misPosts.find(p => p.id === id);
+            const modal = document.getElementById('modalPost');
+            document.getElementById('modalBody').innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center font-bold text-xl">${post.autor[0]}</div>
+                    <div>
+                        <p class="font-bold text-xl text-cyan-400">${post.autor}</p>
+                        <p class="text-gray-500">@periodista_oficial</p>
+                    </div>
+                </div>
+                <p class="text-2xl text-white mb-6 leading-relaxed">${post.texto}</p>
+                ${post.foto ? `<img src="${post.foto}" class="rounded-2xl w-full border border-white/10 shadow-2xl mb-6">` : ''}
+                <div class="text-gray-500 border-t border-white/10 pt-4 text-lg">
+                    <span class="text-white font-bold">${post.likes}</span> Me gusta
+                </div>
+            `;
+            modal.style.display = "flex";
+        }
+
+        function cerrarModal(e) {
+            document.getElementById('modalPost').style.display = "none";
+        }
+
+        window.onload = actualizarMuro;
+    </script>
+</body>
+</html>
