@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - El Chivatazo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap');
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            color: white; min-height: 100vh; margin: 0;
+        }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .notif-new { border-left: 4px solid #00d4ff; background: rgba(0, 212, 255, 0.08); shadow: 0 0 15px rgba(0, 212, 255, 0.1); }
+        .icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <header class="w-full max-w-2xl flex justify-between items-center mb-8 mt-4">
+        <div class="flex items-center gap-3">
+            <div class="bg-cyan-500 p-2 rounded-lg shadow-[0_0_15px_rgba(0,212,255,0.4)]">
+                <i class="fas fa-bell text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">ALERTAS <span class="text-cyan-400">RED</span></h1>
+        </div>
+        <a href="FEED V5.html" class="text-gray-400 hover:text-white transition-all">
+            <i class="fas fa-times text-2xl"></i>
+        </a>
+    </header>
+
+    <main class="w-full max-w-2xl flex flex-col gap-4">
+        
+        <div class="glass-card notif-new p-4 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-white/5 transition-all">
+            <div class="icon-box bg-pink-500/20 text-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.2)]">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm"><span class="font-bold text-white">Sheila Quintanes</span> le ha dado "Me gusta" a tu chivatazo sobre la nueva ley de prensa.</p>
+                <p class="text-[10px] text-cyan-400 mt-1 font-bold">RECIENTE • AHORA</p>
+            </div>
+        </div>
+
+        <div class="glass-card notif-new p-4 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-white/5 transition-all">
+            <div class="icon-box bg-blue-500/20 text-blue-500">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm"><span class="font-bold text-white">Jaime Argüelles</span> ha empezado a seguir tus publicaciones oficiales.</p>
+                <p class="text-[10px] text-cyan-400 mt-1 font-bold">RECIENTE • HACE 5 MIN</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-4 opacity-60">
+            <div class="icon-box bg-gray-500/20 text-gray-400">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm">Tu cuenta ha sido verificada correctamente por el equipo de <span class="font-bold">El Chivatazo</span>.</p>
+                <p class="text-[10px] text-gray-500 mt-1 uppercase">Hace 2 días</p>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-8 glass-card px-8 py-4 rounded-3xl flex gap-10 shadow-2xl border-white/20">
+        <a href="FEED V5.html" class="text-gray-500 hover:text-cyan-400 transition-colors"><i class="fas fa-home text-2xl"></i></a>
+        <a href="mensajes.html" class="text-gray-500 hover:text-cyan-400 transition-colors"><i class="fas fa-comment text-2xl"></i></a>
+        <a href="#" class="text-cyan-400 transition-colors"><i class="fas fa-bell text-2xl"></i></a>
+        <a href="perfil.html" class="text-gray-500 hover:text-cyan-400 transition-colors"><i class="fas fa-user text-2xl"></i></a>
+    </nav>
+
+</body>
+</html>
