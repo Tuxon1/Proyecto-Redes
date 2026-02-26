@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Login Periodistas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #00d4ff;
+            /* Azul deportivo */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 8px #00d4ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0099cc;
+            transform: translateY(-2px);
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* CLASE DE ERROR (ROJO Y TEMBLOR) */
+        .input-error {
+            border: 1px solid #ff4d4d !important;
+            /* Borde rojo forzado */
+            background: rgba(255, 77, 77, 0.1) !important;
+            /* Fondo rojo suave */
+            animation: shake 0.5s;
+            /* Duración del temblor */
+        }
+
+        /* ANIMACIÓN DE TEMBLOR (VIBRACIÓN) */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* Texto de error oculto por defecto */
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-weight: bold;
+            display: none;
+            /* Oculto hasta que falle */
+            text-align: left;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="login-container">
+        <div class="header">
+            <h1>Zona Mixta</h1>
+            <p>Acceso a Prensa Deportiva</p>
+        </div>
+
+        <div id="emailFormContainer">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico o Teléfono</label>
+                    <input type="text" id="email" placeholder="nombre@prensa.com o 600..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <p id="loginErrorMsg" class="error-msg">Credenciales incorrectas</p>
+                </div>
+
+                <p style="text-align: right; margin-bottom: 15px; font-size: 0.8rem;">
+                    <a href="recuperar.html" style="color: #00d4ff; text-decoration: none;">¿Olvidaste la
+                        contraseña?</a>
+                </p>
+
+                <button type="submit" class="login-btn">Entrar a la Zona Mixta</button>
+            </form>
+
+            <button id="googleBtn" class="login-btn"
+                style="background: white; color: #333; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+                Acceder con Google
+            </button>
+
+            <p
+                style="margin-top: 25px; text-align: center; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                ¿Eres usuario de móvil y olvidaste tu contraseña? <br>
+                <a href="#" id="btnSwitchToPhone" style="color:#00d4ff; font-weight: bold;">🔑 Recuperar contraseña con
+                    SMS</a>
+            </p>
+
+            <div class="footer-links">
+                <p>¿No tienes pase? <a href="registro.html">Regístrate aquí</a></p>
+            </div>
+        </div>
+
+        <div id="phoneFormContainer" style="display: none;">
+            <div id="stepRequestCode">
+                <div class="form-group">
+                    <label style="color: #00d4ff;">Introduce tu Teléfono</label>
+                    <input type="tel" id="phoneNumber" placeholder="+34 600 000 000"
+                        style="font-size: 1.2rem; letter-spacing: 1px; text-align: center;">
+                    <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">Incluye el prefijo (+34 para España)
+                    </p>
+                </div>
+                <div id="recaptcha-container" style="margin: 15px auto; display: flex; justify-content: center;"></div>
+
+                <button id="btnSendCode" class="login-btn">Enviar Código SMS</button>
+            </div>
+
+            <div id="stepVerifyCode" style="display: none;">
+                <div class="form-group">
+                    <label style="color: #2ecc71;">Código de Verificación</label>
+                    <input type="text" id="verificationCode" placeholder="1 2 3 4 5 6"
+                        style="text-align: center; letter-spacing: 8px; font-size: 1.5rem; font-weight: bold;">
+                </div>
+                <button id="btnVerifyCode" class="login-btn" style="background: #2ecc71; color: white;">Confirmar
+                    Acceso</button>
+            </div>
+
+            <p
+                style="margin-top: 20px; text-align: center; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <a href="#" id="btnSwitchToEmail" style="color:#aaa; text-decoration: none;">↩ Volver al Login
+                    habitual</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithPhoneNumber,
+            RecaptchaVerifier
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // CONFIGURACIÓN
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkA_5UnO7vRe8qSJuqGjkCgYoRc7WjrdI",
+            authDomain: "elchivi-9bfcf.firebaseapp.com",
+            projectId: "elchivi-9bfcf",
+            storageBucket: "elchivi-9bfcf.firebasestorage.app",
+            messagingSenderId: "571942007751",
+            appId: "1:571942007751:web:e1ffd9e90c9d749c7c5fe2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        auth.languageCode = 'es';
+
+        // REFERENCIAS HTML
+        const emailContainer = document.getElementById('emailFormContainer');
+        const phoneContainer = document.getElementById('phoneFormContainer');
+
+        // --- FUNCIÓN PARA INICIAR EL ROBOT (RECAPTCHA) ---
+        // Lo sacamos fuera para llamarlo solo cuando haga falta
+        const initRecaptcha = () => {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'normal',
+                    'callback': (response) => {
+                        console.log("Captcha resuelto");
+                    },
+                    'expired-callback': () => {
+                        console.log("Captcha caducado");
+                    }
+                });
+                // Forzamos el dibujado del robot
+                window.recaptchaVerifier.render();
+            }
+        }
+
+        // --- BOTÓN: IR A SMS ---
+        document.getElementById('btnSwitchToPhone').addEventListener('click', (e) => {
+            e.preventDefault();
+            // 1. Cambiamos la vista
+            emailContainer.style.display = 'none';
+            phoneContainer.style.display = 'block';
+
+            // 2. ¡AHORA SÍ! Despertamos al robot porque ya es visible
+            initRecaptcha();
+        });
+
+        // --- BOTÓN: VOLVER A CORREO ---
+        document.getElementById('btnSwitchToEmail').addEventListener('click', (e) => {
+            e.preventDefault();
+            phoneContainer.style.display = 'none';
+            emailContainer.style.display = 'block';
+        });
+
+        // --- LÓGICA DE TELÉFONO ---
+
+        // 1. ENVIAR CÓDIGO
+        document.getElementById('btnSendCode').addEventListener('click', () => {
+            // Limpiamos espacios en blanco del número por si acaso
+            const rawPhoneNumber = document.getElementById('phoneNumber').value;
+            const phoneNumber = rawPhoneNumber.replace(/\s/g, '');
+
+            const appVerifier = window.recaptchaVerifier;
+
+            if (!phoneNumber || phoneNumber.length < 9) {
+                alert("Por favor, escribe un número válido (ej: +34600000000)");
+                return;
+            }
+
+            signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    // ¡ÉXITO!
+                    window.confirmationResult = confirmationResult;
+
+                    // Ocultamos el número y mostramos el campo del código
+                    document.getElementById('stepRequestCode').style.display = 'none';
+                    document.getElementById('stepVerifyCode').style.display = 'block';
+
+                    // AQUI es donde debes poner el código 123456
+                    console.log("SMS enviado (o simulado si es número de prueba)");
+                }).catch((error) => {
+                    console.error("Error SMS:", error);
+                    alert("Error: " + error.message + "\n\n(Asegúrate de que el dominio está autorizado en Firebase)");
+                });
+        });
+
+        // 2. CONFIRMAR CÓDIGO
+        document.getElementById('btnVerifyCode').addEventListener('click', () => {
+            const code = document.getElementById('verificationCode').value;
+
+            if (!code) return;
+
+            window.confirmationResult.confirm(code).then((result) => {
+                const user = result.user;
+                window.location.href = "perfil.html";
+            }).catch((error) => {
+                alert("Código incorrecto.");
+            });
+        });
+
+
+        // --- LÓGICA ANTIGUA (LOGIN CORREO) ---
+        // (Mantenemos esto igual que antes)
+        // --- LÓGICA DE LOGIN HÍBRIDO (CORREO O TELÉFONO + PASS) ---
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const inputVal = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorText = document.getElementById('loginErrorMsg');
+            const inputs = document.querySelectorAll('#email, #password');
+
+            // IMPORTANTE: Este dominio debe ser igual al que pongas en registro.html
+            const APP_DOMAIN = "@elchivatazosport.app";
+            let finalEmail = inputVal;
+
+            // Si el usuario no escribe una '@', el código asume que es su teléfono
+            if (!inputVal.includes('@')) {
+                const cleanPhone = inputVal.replace(/\s/g, ''); // Quitamos espacios
+                finalEmail = cleanPhone + APP_DOMAIN; // Lo convertimos en el email falso
+            }
+
+            signInWithEmailAndPassword(auth, finalEmail, password)
+                .then(() => {
+                    window.location.href = "perfil.html";
+                })
+                .catch((error) => {
+                    console.error("Error login:", error.code);
+                    inputs.forEach(input => {
+                        input.classList.add('input-error');
+                        input.value = '';
+                    });
+                    errorText.style.display = 'block';
+
+                    // Quitar el rojo cuando el usuario vuelva a escribir
+                    inputs.forEach(input => {
+                        input.addEventListener('input', () => {
+                            input.classList.remove('input-error');
+                            errorText.style.display = 'none';
+                        }, { once: true });
+                    });
+                });
+        });
+
+        // Login Google
+        const googleBtn = document.getElementById('googleBtn');
+        const provider = new GoogleAuthProvider();
+        googleBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                window.location.href = "perfil.html";
+            } catch (error) {
+                console.error("Google Error", error.code);
+            }
+        });
+    </script>
+</body>
+
+</html>
