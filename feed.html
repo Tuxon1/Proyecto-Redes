@@ -36,13 +36,19 @@
     <aside class="hidden md:flex flex-col w-64 p-6 sticky top-0 h-screen border-r border-white/10">
         <h1 class="text-2xl font-black italic text-cyan-glow mb-10 tracking-tighter">EL CHIVATAZO</h1>
         <nav class="space-y-6 flex-1 text-lg">
-            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-house"></i> <span>Inicio</span></div>
+            <div onclick="window.location.href='feed.html'" class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition">
+                <i class="fa-solid fa-house"></i> <span>Inicio</span>
+            </div>
             <div class="relative flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition" onclick="this.querySelector('.notif-dot').style.display='none'">
                 <div class="relative"><i class="fa-solid fa-bell"></i><div class="notif-dot"></div></div>
                 <span>Notificaciones</span>
             </div>
-            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-envelope"></i> <span>Mensajes</span></div>
-            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i class="fa-solid fa-user"></i> <span>Perfil</span></div>
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition">
+                <i class="fa-solid fa-envelope"></i> <span>Mensajes</span>
+            </div>
+            <div onclick="window.location.href='perfil.html'" class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition">
+                <i class="fa-solid fa-user"></i> <span>Perfil</span>
+            </div>
         </nav>
         <button onclick="document.getElementById('inputTexto').focus()" class="w-full bg-cyan-500 text-slate-900 font-bold py-3 rounded-full hover:bg-cyan-400 transition shadow-lg">POSTEAR</button>
     </aside>
