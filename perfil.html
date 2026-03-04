@@ -7,7 +7,6 @@
     <title> Zona Mixta Periodística</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Fusionamos las fuentes y el fondo oscuro */
         @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
 
         body {
@@ -17,7 +16,6 @@
             min-height: 100vh;
         }
 
-        /* Efecto Cristal para tu tarjeta central */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -25,7 +23,6 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
-        /* Colores personalizados */
         .text-cyan-glow {
             color: #00d4ff;
             text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
@@ -47,14 +44,12 @@
             padding: 0 4px;
         }
 
-        /* CONFIGURACIÓN DE LAS ZONAS DE IMAGEN */
         .upload-zone {
             position: relative;
             overflow: hidden;
             transition: 0.3s;
         }
 
-        /* Clases que SOLO funcionan cuando el modo edición está activo */
         .edit-mode-active .upload-zone {
             cursor: pointer;
         }
@@ -72,7 +67,6 @@
             font-size: 0.8rem;
         }
 
-        /* Estilo visual para campos editables */
         .edit-mode-active [contenteditable="true"] {
             background: rgba(0, 212, 255, 0.05);
             border-bottom: 1px dashed #00d4ff;
@@ -80,14 +74,15 @@
             outline: none;
         }
 
-        /* Avatar circular con el diseño propuesto */
         .avatar-container {
             border: 3px solid #00d4ff;
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
             background-color: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- ESTILOS DEL MODAL DE NO VERIFICADO --- */
         .warning-icon {
             font-size: 4rem;
             margin-bottom: 15px;
@@ -120,30 +115,6 @@
             color: #1a1a2e;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 25, 0.95);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .modal-overlay input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #00d4ff;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            width: 100%;
-            outline: none;
-        }
     </style>
 </head>
 
@@ -152,10 +123,11 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 h-full">
 
         <aside class="md:w-64 space-y-4">
-            <div class="text-3xl font-black italic text-cyan-glow mb-10 tracking-tighter uppercase mt-2">El Chivatazo
-            </div>
+            <div class="text-3xl font-black italic text-cyan-glow mb-10 tracking-tighter uppercase mt-2">El Chivatazo</div>
             <nav class="space-y-3 font-bold text-sm">
-                <div class="p-3 bg-cyan-custom rounded-lg cursor-pointer flex items-center gap-2">📻 Al Aire</div>
+                <div onclick="window.location.href='feed.html'" class="p-3 bg-cyan-custom rounded-lg cursor-pointer flex items-center gap-2 transition hover:scale-105 active:scale-95">
+                    📻 Home
+                </div>
             </nav>
         </aside>
 
@@ -163,59 +135,39 @@
             <div class="glass-card rounded-2xl overflow-hidden relative">
 
                 <div class="absolute top-4 right-4 z-50">
-                    <button id="menuToggle"
-                        class="text-white hover:text-[#00d4ff] transition p-2 rounded-full hover:bg-black/30 backdrop-blur-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    <button id="menuToggle" class="text-white hover:text-[#00d4ff] transition p-2 rounded-full hover:bg-black/30 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                         </svg>
                     </button>
 
-                    <div id="dropdownMenu"
-                        class="hidden absolute right-0 mt-2 w-48 bg-[#1a1a2e] border border-[#00d4ff]/30 rounded-xl shadow-2xl overflow-hidden">
-                        
-                        <div id="editProfileBtn"
-                            class="px-4 py-3 text-[#00d4ff] hover:bg-[#00d4ff]/10 cursor-pointer transition font-bold flex items-center gap-2 border-b border-[#00d4ff]/20">
+                    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-[#1a1a2e] border border-[#00d4ff]/30 rounded-xl shadow-2xl overflow-hidden">
+                        <div id="editProfileBtn" class="px-4 py-3 text-[#00d4ff] hover:bg-[#00d4ff]/10 cursor-pointer transition font-bold flex items-center gap-2 border-b border-[#00d4ff]/20">
                             ✏️ Editar Perfil
                         </div>
-
-                        <div id="logoutBtn"
-                            class="px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer transition font-bold flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
+                        <div id="logoutBtn" class="px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer transition font-bold flex items-center gap-2">
                             Cerrar Sesión
                         </div>
                     </div>
                 </div>
 
-                <div id="headerUploadZone" class="upload-zone h-60 bg-slate-800">
-                    <img id="header-img" class="w-full h-full object-cover opacity-70"
-                        src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
-                    <input type="file" id="input-header" class="hidden" accept="image/*"
-                        onchange="updateImg(this, 'header-img')">
+                <div id="headerUploadZone" class="upload-zone h-60 bg-slate-800 flex items-center justify-center">
+                    <img id="header-img" class="w-full h-full object-cover opacity-70" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1470&auto=format&fit=crop">
+                    <input type="file" id="input-header" class="hidden" accept="image/*">
                 </div>
 
                 <div class="px-8 pb-8 relative">
                     <div class="flex justify-between items-end -mt-16 mb-4">
-                        
                         <div id="avatarUploadZone" class="upload-zone w-32 h-32 rounded-full avatar-container">
-                            <img id="userPhoto" class="w-full h-full object-cover rounded-full"
-                                src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-                            <input type="file" id="input-avatar" class="hidden" accept="image/*"
-                                onchange="updateImg(this, 'userPhoto')">
+                            <img id="userPhoto" class="w-full h-full object-cover rounded-full bg-white" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                            <input type="file" id="input-avatar" class="hidden" accept="image/*">
                         </div>
                         
                         <div class="flex gap-2">
-                            <button id="saveProfileBtn"
-                                class="hidden bg-green-500 px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-white">
+                            <button id="saveProfileBtn" class="hidden bg-green-500 px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-white">
                                 💾 Guardar
                             </button>
-                            <button
-                                class="bg-cyan-custom px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-[#1a1a2e]">
+                            <button class="bg-cyan-custom px-6 py-2 rounded-lg font-bold transition mb-2 shadow-lg hover:-translate-y-1 text-[#1a1a2e]">
                                 Publicar Primicia
                             </button>
                         </div>
@@ -223,139 +175,39 @@
 
                     <div class="space-y-1">
                         <div class="flex items-center gap-3">
-                            <h1 id="userName" class="text-3xl font-black tracking-tight transition-all">Cargando...</h1>
-                            <span
-                                class="bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/50 text-xs font-bold px-2 py-0.5 rounded italic uppercase">Prensa
-                                Verificada</span>
+                            <h1 id="userName" class="text-3xl font-black tracking-tight">Cargando...</h1>
+                            <span class="bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/50 text-xs font-bold px-2 py-0.5 rounded italic uppercase">Prensa Verificada</span>
                         </div>
-
-                        <p id="userEmail" class="text-slate-400 text-sm">cargando@correo.com</p>
-
-                        <p id="userMedia" class="text-[#00d4ff] font-bold text-lg pt-3 uppercase tracking-wide transition-all">Buscando
-                            credenciales...</p>
-
-                        <p id="userBio" class="max-w-2xl text-slate-300 leading-relaxed pt-2 transition-all">
-                            Tu biografía profesional o especialidad táctica aparecerá aquí. Haz clic en "Editar Perfil" en el menú para cambiarla.
-                        </p>
+                        <p id="userEmail" class="text-slate-400 text-sm"></p>
+                        <p id="userMedia" class="text-[#00d4ff] font-bold text-lg pt-3 uppercase tracking-wide"></p>
+                        <p id="userBio" class="max-w-2xl text-slate-300 leading-relaxed pt-2">Tu biografía profesional o especialidad táctica aparecerá aquí.</p>
                     </div>
 
                     <div class="flex gap-12 mt-8 border-t border-white/10 pt-6 font-black">
-                        <div>
-                            <p class="text-3xl text-cyan-glow">1.2K</p>
-                            <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Lectores</p>
-                        </div>
-                        <div>
-                            <p class="text-3xl text-cyan-glow">45</p>
-                            <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Primicias</p>
-                        </div>
+                        <div><p class="text-3xl text-cyan-glow">1.2K</p><p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Lectores</p></div>
+                        <div><p class="text-3xl text-cyan-glow">45</p><p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Primicias</p></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="logoutModal"
-        class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/80 backdrop-blur-sm transition-opacity">
-        <div
-            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
-
-            <div
-                class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/10 mb-6 border border-red-500/20">
-                <svg class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    <div id="saveSuccessModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
+        <div class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-green-500/30 shadow-[0_0_40px_rgba(34,197,94,0.15)]">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-500/10 mb-6 border border-green-500/20">
+                <svg class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-
-            <h3 class="text-xl font-black text-white mb-2 tracking-wide">¿Abandonar la zona mixta?</h3>
-            <p class="text-slate-300 text-sm mb-8">¿Estás seguro de que quieres cerrar tu sesión actual?</p>
-
-            <div class="flex justify-between gap-4">
-                <button id="cancelLogoutBtn"
-                    class="flex-1 py-3 rounded-lg font-bold border border-white/20 text-slate-300 hover:bg-white/10 hover:text-white transition">
-                    Cancelar
-                </button>
-                <button id="confirmLogoutBtn"
-                    class="flex-1 py-3 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] transition">
-                    Confirmar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="verificationModal"
-        class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
-        <div
-            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#ffcc00]/30 shadow-[0_0_40px_rgba(255,204,0,0.1)]">
-
-            <div class="warning-icon">⚠️</div>
-
-            <h2 class="text-xl font-black text-[#ffcc00] mb-3 tracking-wide uppercase">ACCESO RESTRINGIDO</h2>
-
-            <p class="text-slate-300 text-sm mb-6 leading-relaxed">
-                Tu cuenta aún no ha sido verificada.<br><br>
-                Por favor, revisa tu bandeja de entrada (y la carpeta de <strong>SPAM</strong>) para activar tu pase de
-                prensa.
-            </p>
-
-            <button id="btnBackToLogin" class="btn-return">
-                Vuelvo ahora
-            </button>
-        </div>
-    </div>
-
-    <div id="resetPasswordModal"
-        class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
-        <div
-            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
-
-            <div
-                class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#00d4ff]/10 mb-6 border border-[#00d4ff]/20">
-                <svg class="h-8 w-8 text-[#00d4ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-            </div>
-
-            <h3 class="text-xl font-black text-white mb-2 tracking-wide uppercase">Nueva Seguridad</h3>
-            <p class="text-slate-300 text-sm mb-6">Has entrado vía SMS. Define una contraseña para tus próximos accesos.
-            </p>
-
-            <div class="space-y-4 mb-8">
-                <input type="password" id="newPasswordInput" placeholder="Mínimo 6 caracteres"
-                    class="w-full bg-black/30 border border-[#00d4ff]/30 rounded-lg p-3 text-white text-center focus:outline-none focus:border-[#00d4ff] transition">
-            </div>
-
-            <button id="btnSaveNewPassword"
-                class="w-full py-3 rounded-lg font-bold bg-cyan-custom text-[#1a1a2e] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition uppercase tracking-tighter">
-                Actualizar Contraseña
-            </button>
-        </div>
-    </div>
-
-    <div id="successPassModal"
-        class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1a1a2e]/90 backdrop-blur-md">
-        <div
-            class="glass-card rounded-2xl p-8 max-w-sm w-full mx-4 text-center border border-[#00d4ff]/30 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
-
-            <div class="text-6xl mb-6 drop-shadow-[0_0_15px_rgba(0,212,255,0.5)]">⭐</div>
-
-            <h3 class="text-2xl font-black text-[#00d4ff] mb-2 tracking-wide uppercase">¡Todo Listo!</h3>
-            <p class="text-slate-300 text-sm mb-8">Tu contraseña ha sido actualizada. Ya puedes operar con normalidad en
-                la zona mixta.</p>
-
-            <button id="btnFinishSuccess"
-                class="w-full py-3 rounded-lg font-bold bg-cyan-custom text-[#1a1a2e] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition uppercase">
-                Entrar al Perfil
-            </button>
+            <h3 class="text-2xl font-black text-green-400 mb-2 tracking-wide uppercase">¡Cambios Guardados!</h3>
+            <p class="text-slate-300 text-sm mb-8">Tu perfil de prensa ha sido actualizado correctamente.</p>
+            <button id="btnFinishSave" class="w-full py-3 rounded-lg font-bold bg-green-500 text-white hover:bg-green-600 shadow-[0_0_20px_rgba(34,197,94,0.4)] transition uppercase tracking-tighter">Entendido</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, linkWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        
-        // IMPORTANTE: ¡Hemos añadido updateDoc aquí!
+        import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -371,243 +223,106 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Referencias HTML
+        // Referencias DOM
         const userName = document.getElementById('userName');
         const userEmail = document.getElementById('userEmail');
         const userMedia = document.getElementById('userMedia');
         const userPhoto = document.getElementById('userPhoto');
+        const headerImg = document.getElementById('header-img');
         const userBio = document.getElementById('userBio');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const successModal = document.getElementById('saveSuccessModal');
 
+        // Cargar datos
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Filtros de Seguridad y Validaciones (No Verificado, Expirado, Pass por SMS...)
-                const esUsuarioTelefono = user.phoneNumber !== null;
-                const esEmailVerificado = user.emailVerified === true;
-
-                if (!esUsuarioTelefono && !esEmailVerificado) {
-                    const fechaCreacion = new Date(user.metadata.creationTime).getTime();
-                    const ahora = new Date().getTime();
-                    const sieteDiasEnMs = 7 * 24 * 60 * 60 * 1000;
-
-                    if (ahora - fechaCreacion > sieteDiasEnMs) {
-                        try {
-                            await user.delete();
-                            alert("⌛ TPO. AGOTADO\n\nTu solicitud de registro ha caducado.\nLa cuenta ha sido eliminada por seguridad.");
-                            window.location.href = "registro.html";
-                        } catch (error) {
-                            console.error("Error al borrar:", error);
-                            await signOut(auth);
-                            window.location.href = "login.html";
-                        }
-                        return;
-                    }
-
-                    const verifyModal = document.getElementById('verificationModal');
-                    verifyModal.classList.remove('hidden');
-
-                    document.getElementById('btnBackToLogin').addEventListener('click', async () => {
-                        await signOut(auth);
-                        window.location.href = "login.html";
-                    });
-
-                    return;
-                }
-
-                const entroConSMS = user.providerData.some(p => p.providerId === 'phone');
-                const yaCambiado = sessionStorage.getItem('passwordCambiado');
-
-                if (entroConSMS && !yaCambiado) {
-                    const resetModal = document.getElementById('resetPasswordModal');
-                    const successModal = document.getElementById('successPassModal');
-
-                    if (resetModal) {
-                        resetModal.classList.remove('hidden');
-                        resetModal.classList.add('flex');
-
-                        document.getElementById('btnSaveNewPassword').onclick = async () => {
-                            const newPass = document.getElementById('newPasswordInput').value;
-                            if (newPass.length < 6) { alert("La contraseña debe ser de al menos 6 caracteres"); return; }
-
-                            try {
-                                await updatePassword(user, newPass);
-                                sessionStorage.setItem('passwordCambiado', 'true');
-
-                                resetModal.classList.add('hidden');
-                                successModal.classList.remove('hidden');
-                                successModal.classList.add('flex');
-
-                                document.getElementById('btnFinishSuccess').onclick = () => {
-                                    successModal.classList.add('hidden');
-                                };
-                            } catch (error) {
-                                alert("Error: " + error.message);
-                            }
-                        };
-                    }
-                }
-
-                // Carga de Datos Básicos
                 userEmail.textContent = user.email;
-
-                if (user.displayName) userName.textContent = user.displayName;
-                if (user.photoURL) userPhoto.src = user.photoURL.replace("=s96-c", "=s400-c");
-
-                // Buscar datos extra en Firestore (Nombre, Medio y Biografía)
-                try {
-                    const docRef = doc(db, "periodistas", user.uid);
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        const datos = docSnap.data();
-                        userName.textContent = datos.nombreCompleto || userName.textContent;
-                        userMedia.textContent = datos.medioComunicacion || "Freelance";
-                        
-                        // Añadida la carga de la Biografía
-                        if (datos.biografia) {
-                            userBio.textContent = datos.biografia;
-                        }
-                    } else {
-                        userMedia.textContent = "Sin medio asignado";
-                    }
-                } catch (error) {
-                    console.error("Error Firestore:", error);
+                const docRef = doc(db, "periodistas", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const datos = docSnap.data();
+                    userName.textContent = datos.nombreCompleto || "Sin Nombre";
+                    userMedia.textContent = datos.medioComunicacion || "Freelance";
+                    userBio.textContent = datos.biografia || "Escribe algo sobre ti...";
+                    if (datos.fotoPerfil) userPhoto.src = datos.fotoPerfil;
+                    if (datos.fotoCabecera) headerImg.src = datos.fotoCabecera;
                 }
             } else {
                 window.location.href = "login.html";
             }
         });
 
-
-        // ==========================================
-        // --- NUEVA LÓGICA DE EDICIÓN DE PERFIL ---
-        // ==========================================
+        // Modo edición
         let isEditMode = false;
-        
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const headerUploadZone = document.getElementById('headerUploadZone');
-        const avatarUploadZone = document.getElementById('avatarUploadZone');
-
-        // 1. Activar Modo Edición
-        editProfileBtn.addEventListener('click', () => {
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
             isEditMode = true;
             document.body.classList.add('edit-mode-active');
-            
-            // Habilitamos los textos para escribirlos
             userName.contentEditable = "true";
             userMedia.contentEditable = "true";
             userBio.contentEditable = "true";
-            
-            // Mostrar botón Guardar
             saveProfileBtn.classList.remove('hidden');
-            
-            // Ocultar el menú desplegable
             document.getElementById('dropdownMenu').classList.add('hidden');
-            
-            // Ponemos el cursor en el nombre automáticamente
-            userName.focus(); 
         });
 
-        // 2. Controlar clics en las fotos (solo se abren si estamos en modo edición)
-        headerUploadZone.addEventListener('click', () => {
-            if(isEditMode) document.getElementById('input-header').click();
-        });
-        
-        avatarUploadZone.addEventListener('click', () => {
-            if(isEditMode) document.getElementById('input-avatar').click();
-        });
-
-        // 3. Guardar Datos en Firebase
+        // Guardar cambios
         saveProfileBtn.addEventListener('click', async () => {
             const user = auth.currentUser;
             if(!user) return;
-
-            saveProfileBtn.textContent = "⏳ Guardando...";
+            
+            saveProfileBtn.textContent = "⌛ Guardando...";
+            saveProfileBtn.disabled = true;
 
             try {
-                // Actualizar los textos en Firestore
-                const docRef = doc(db, "periodistas", user.uid);
-                await updateDoc(docRef, {
+                // (Aquí iría tu lógica de ImgBB para subir imágenes si hay archivos nuevos seleccionados)
+                
+                const datosAActualizar = {
                     nombreCompleto: userName.textContent.trim(),
                     medioComunicacion: userMedia.textContent.trim(),
                     biografia: userBio.textContent.trim()
-                });
+                };
 
-                // Salir del modo edición
+                await updateDoc(doc(db, "periodistas", user.uid), datosAActualizar);
+
+                // Desactivar edición
                 isEditMode = false;
                 document.body.classList.remove('edit-mode-active');
-                
-                // Deshabilitar textos
                 userName.contentEditable = "false";
                 userMedia.contentEditable = "false";
                 userBio.contentEditable = "false";
-                
-                // Restaurar botón Guardar a su estado original (oculto)
                 saveProfileBtn.classList.add('hidden');
+                
+                // Mostrar Pop-up bonito
+                successModal.classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+                alert("Error al guardar");
+            } finally {
                 saveProfileBtn.textContent = "💾 Guardar";
-
-                alert("¡Perfil actualizado correctamente!");
-
-            } catch (error) {
-                console.error("Error al actualizar perfil:", error);
-                alert("Hubo un error al guardar los datos.");
-                saveProfileBtn.textContent = "💾 Guardar";
+                saveProfileBtn.disabled = false;
             }
         });
 
-
-        // --- LÓGICA DEL MODAL DE CERRAR SESIÓN ---
-        const logoutModal = document.getElementById('logoutModal');
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('dropdownMenu').classList.add('hidden');
-            logoutModal.classList.remove('hidden');
+        // Cerrar modal de éxito
+        document.getElementById('btnFinishSave').addEventListener('click', () => {
+            successModal.classList.add('hidden');
         });
 
-        document.getElementById('cancelLogoutBtn').addEventListener('click', () => {
-            logoutModal.classList.add('hidden');
-        });
-
-        document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => {
-                console.error("Error al cerrar sesión:", error);
-            });
-        });
-
-        logoutModal.addEventListener('click', (e) => {
-            if (e.target === logoutModal) {
-                logoutModal.classList.add('hidden');
-            }
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = "login.html";
         });
     </script>
 
     <script>
-        // Función para previsualizar las imágenes en pantalla
-        function updateImg(input, imgId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => document.getElementById(imgId).src = e.target.result;
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // Lógica para abrir/cerrar el menú de 3 puntos
+        // Lógica visual del menú
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
-
         menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
             dropdownMenu.classList.toggle('hidden');
         });
-
-        document.addEventListener('click', (e) => {
-            if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+        document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
     </script>
 </body>
-
 </html>
