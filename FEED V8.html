@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Chivatazo - Ultimate Sport Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap');
+
+        :root {
+            --bg: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            --glass: rgba(15, 23, 42, 0.8);
+            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.1);
+            --card: rgba(255, 255, 255, 0.05);
+            --accent: #00d4ff;
+        }
+
+        .light-mode {
+            --bg: radial-gradient(circle at top, #f8fafc 0%, #e2e8f0 100%);
+            --glass: rgba(255, 255, 255, 0.9);
+            --text: #1e293b;
+            --border: rgba(0, 0, 0, 0.1);
+            --card: rgba(0, 0, 0, 0.05);
+            --accent: #0284c7;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .glass-header {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .match-card {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 12px;
+            transition: 0.2s;
+        }
+
+        .match-card:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .is-liked {
+            color: #ef4444 !important;
+            transform: scale(1.1);
+        }
+
+        .text-cyan-glow {
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        #modalPost {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 30px;
+            position: relative;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="modalPost" onclick="cerrarModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button onclick="cerrarModal()"
+                class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-white">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <aside class="hidden lg:flex flex-col w-64 p-6 sticky top-0 h-screen border-r border-white/10">
+        <h1 onclick="irAlInicio()"
+            class="text-2xl font-black italic text-cyan-glow mb-10 tracking-tighter cursor-pointer hover:opacity-80 transition">
+            EL CHIVATAZO</h1>
+        <nav class="space-y-6 flex-1 text-lg">
+            <div onclick="irAlInicio()" class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i
+                    class="fa-solid fa-house"></i> <span>Inicio</span></div>
+            <div onclick="toggleTheme()" class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition">
+                <i class="fa-solid fa-circle-half-stroke"></i> <span id="themeLabel">Modo Claro</span></div>
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i
+                    class="fa-solid fa-bell"></i> <span>Notificaciones</span></div>
+            <div class="flex items-center gap-4 cursor-pointer hover:text-cyan-400 transition"><i
+                    class="fa-solid fa-user"></i> <span>Perfil</span></div>
+        </nav>
+        <button onclick="document.getElementById('inputTexto').focus()"
+            class="w-full bg-cyan-500 text-slate-900 font-bold py-3 rounded-full hover:bg-cyan-400 transition shadow-lg">POSTEAR</button>
+    </aside>
+
+    <main class="flex-1 max-w-2xl border-x border-white/10 min-h-screen">
+        <header class="sticky top-0 z-50 glass-header p-4">
+            <h2 class="text-xs font-bold uppercase tracking-widest opacity-50 text-center">Muro Principal</h2>
+        </header>
+
+        <div class="p-4 border-b border-white/10 bg-white/5">
+            <div class="flex gap-4">
+                <div
+                    class="w-12 h-12 bg-cyan-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white">
+                    YO</div>
+                <div class="flex-1">
+                    <textarea id="inputTexto" rows="3"
+                        class="w-full bg-transparent border-none text-xl outline-none resize-none placeholder-white/20 text-white"
+                        placeholder="¿Cuál es el chivatazo?"></textarea>
+                    <div id="imgPreviewContainer"></div>
+                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/5">
+                        <label class="cursor-pointer text-cyan-400 hover:text-cyan-300 text-xl">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" id="inputFoto" class="hidden" accept="image/*" onchange="previewFile()">
+                        </label>
+                        <button onclick="guardarPost()"
+                            class="bg-cyan-500 text-slate-900 px-8 py-2 rounded-full font-bold hover:bg-cyan-300 transition">Publicar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="muroDinamico"></div>
+    </main>
+
+    <aside class="hidden xl:block w-80 p-4 sticky top-0 h-screen overflow-y-auto">
+        <div class="rounded-2xl overflow-hidden border border-white/10 bg-black/20 backdrop-blur-md">
+
+            <div
+                class="p-3 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-tighter flex items-center gap-2">
+                <i class="fa-solid fa-futbol"></i> Fútbol en Vivo
+            </div>
+            <div id="soccer-live"></div>
+
+            <div
+                class="p-3 bg-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-tighter flex items-center gap-2 border-t border-white/5">
+                <i class="fa-solid fa-basketball"></i> NBA Live
+            </div>
+            <div id="nba-live"></div>
+
+            <div
+                class="p-3 bg-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-tighter flex items-center gap-2 border-t border-white/5">
+                <i class="fa-solid fa-flag-checkered"></i> F1 Temporada 2026
+            </div>
+            <div id="f1-next"></div>
+
+        </div>
+    </aside>
+
+    <script>
+        
+        const API_KEY = "c2623a555f53586a45aea250dd918679";
+        let misPosts = JSON.parse(localStorage.getItem('chivatazos_v3')) || [];
+        let imagenBase64 = "";
+
+        // --- LÓGICA DEPORTIVA (API) ---
+        async function updateSports() {
+            const h = { "x-rapidapi-key": API_KEY };
+
+            // Fútbol
+            try {
+                h["x-rapidapi-host"] = "v3.football.api-sports.io";
+                const r = await fetch("https://v3.football.api-sports.io/fixtures?live=all", { headers: h });
+                const d = await r.json();
+                document.getElementById('soccer-live').innerHTML = d.response.slice(0, 4).map(m => `
+    <div class="match-card p-3 mb-2 glass-panel rounded-xl">
+        <div class="flex justify-between text-[9px] opacity-60 mb-2 uppercase tracking-wider">
+            <span>${m.league.name}</span>
+            <span class="text-red-500 font-bold animate-pulse">${m.fixture.status.elapsed}'</span>
+        </div>
+        
+        <div class="flex justify-between items-center text-xs mb-1">
+<div class="cursor-pointer hover:bg-white/5 p-1 rounded" onclick="verDetallesEquipo(${m.teams.home.id}, ${m.league.id})">
+    <img src="${m.teams.home.logo}" class="w-4 h-4 inline mr-2">
+    <span>${m.teams.home.name}</span>
+</div>
+            <b class="text-cyan-400">${m.goals.home}</b>
+        </div>
+
+        <div class="flex justify-between items-center text-xs">
+            <div class="flex items-center gap-2">
+                <img src="${m.teams.away.logo}" alt="logo" class="w-4 h-4 object-contain">
+                <span>${m.teams.away.name}</span>
+            </div>
+            <b class="text-cyan-400">${m.goals.away}</b>
+        </div>
+    </div>
+`).join('') || "<p class='p-4 text-[10px] opacity-40 text-center'>No hay partidos en vivo</p>";
+            } catch (e) { }
+
+            // NBA
+            try {
+                h["x-rapidapi-host"] = "v2.nba.api-sports.io";
+                const r = await fetch("https://v2.nba.api-sports.io/games?live=all", { headers: h });
+                const d = await r.json();
+                document.getElementById('nba-live').innerHTML = d.response.map(g => `
+                    <div class="match-card">
+                        <div class="flex justify-between text-xs"><span>${g.teams.home.name}</span><b>${g.scores.home.points}</b></div>
+                        <div class="flex justify-between text-xs"><span>${g.teams.visitors.name}</span><b>${g.scores.visitors.points}</b></div>
+                    </div>
+                `).join('') || "<p class='p-4 text-[10px] opacity-40'>NBA fuera de horario</p>";
+            } catch (e) { }
+
+            // F1
+            try {
+                h["x-rapidapi-host"] = "v1.formula-1.api-sports.io";
+                const r = await fetch("https://v1.formula-1.api-sports.io/races?next=1&type=race", { headers: h });
+                const d = await r.json();
+                if (d.response.length > 0) {
+                    const rc = d.response[0];
+                    document.getElementById('f1-next').innerHTML = `
+                        <div class="match-card bg-red-600/5">
+                            <div class="text-red-500 font-bold text-[10px] uppercase">${rc.competition.name}</div>
+                            <div class="text-xs font-bold mt-1">${rc.circuit.name}</div>
+                            <div class="mt-2 text-[10px] p-1 bg-red-600 text-white text-center rounded font-black">${new Date(rc.date).toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+            } catch (e) { }
+        }
+
+        // --- LÓGICA DEL MURO ---
+        function irAlInicio() { window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => location.reload(), 500); }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeLabel').innerText = isLight ? "Modo Oscuro" : "Modo Claro";
+        }
+
+        function previewFile() {
+            const file = document.getElementById('inputFoto').files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                document.getElementById('imgPreviewContainer').innerHTML = `<img src="${reader.result}" class="max-h-40 rounded-xl mt-3 border border-white/20">`;
+                imagenBase64 = reader.result;
+            }
+            if (file) reader.readAsDataURL(file);
+        }
+
+        function guardarPost() {
+            const txt = document.getElementById('inputTexto');
+            if (!txt.value.trim() && !imagenBase64) return;
+            misPosts.unshift({ id: Date.now(), autor: 'Periodista Pro', texto: txt.value, foto: imagenBase64, likes: 0, liked: false });
+            txt.value = ''; imagenBase64 = '';
+            document.getElementById('imgPreviewContainer').innerHTML = '';
+            actualizarMuro();
+        }
+
+        function darLike(e, id) {
+            e.stopPropagation();
+            const p = misPosts.find(x => x.id === id);
+            p.liked = !p.liked; p.likes += p.liked ? 1 : -1;
+            actualizarMuro();
+        }
+
+        function borrarPost(e, id) {
+            e.stopPropagation();
+            misPosts = misPosts.filter(x => x.id !== id);
+            actualizarMuro();
+        }
+
+        function actualizarMuro() {
+            const cont = document.getElementById('muroDinamico');
+            cont.innerHTML = misPosts.map(p => `
+                <div class="p-5 border-b border-white/5 hover:bg-white/5 transition cursor-pointer" onclick="verPostGrande(${p.id})">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center font-bold text-xs text-white border border-cyan-500/20">${p.autor[0]}</div>
+                        <div class="flex-1">
+                            <span class="font-bold text-sm text-cyan-400">@${p.autor}</span>
+                            <p class="mt-1 opacity-90">${p.texto}</p>
+                            ${p.foto ? `<img src="${p.foto}" class="mt-3 rounded-xl max-h-60 w-full object-cover border border-white/10">` : ''}
+                            <div class="flex gap-10 mt-4 text-white/30 text-xs">
+                                <button onclick="darLike(event, ${p.id})" class="flex items-center gap-2 hover:text-red-500 ${p.liked ? 'is-liked' : ''}">
+                                    <i class="${p.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> <span>${p.likes}</span>
+                                </button>
+                                <i class="fa-solid fa-trash hover:text-white" onclick="borrarPost(event, ${p.id})"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            localStorage.setItem('chivatazos_v3', JSON.stringify(misPosts));
+        }
+
+        function verPostGrande(id) {
+            const p = misPosts.find(x => x.id === id);
+            document.getElementById('modalBody').innerHTML = `
+                <p class="font-bold text-cyan-400 mb-2">@${p.autor}</p>
+                <p class="text-2xl mb-4">${p.texto}</p>
+                ${p.foto ? `<img src="${p.foto}" class="w-full rounded-xl">` : ''}
+            `;
+            document.getElementById('modalPost').style.display = "flex";
+        }
+
+        function cerrarModal() { document.getElementById('modalPost').style.display = "none"; }
+
+        window.onload = () => { actualizarMuro(); updateSports(); setInterval(updateSports, 60000); };
+
+    async function verDetallesEquipo(teamId) {
+    const h = { "x-rapidapi-host": "v3.football.api-sports.io", "x-apisports-key": "c2623a555f53586a45aea250dd918679" };
+    
+    // Traemos la liga (standings) y la plantilla (squad)
+    const [resPos, resPlayers] = await Promise.all([
+        fetch(`https://v3.football.api-sports.io/standings?season=2025&team=${teamId}`, { headers: h }),
+        fetch(`https://v3.football.api-sports.io/players/squads?team=${teamId}`, { headers: h })
+    ]);
+
+    const dataPos = await resPos.json();
+    const dataPlayers = await resPlayers.json();
+
+    const rank = dataPos.response[0]?.league.standings[0][0]?.rank || "N/A";
+    const equipo = dataPos.response[0]?.team.name || "Equipo";
+    const jugadores = dataPlayers.response[0]?.players.slice(0, 5).map(p => p.name).join(", ");
+
+    alert(`⚽ ${equipo}\n🏆 Posición: ${rank}º\n🏃 Jugadores: ${jugadores}...`);
+}
+    </script>
+    
+</body>
+
+</html>

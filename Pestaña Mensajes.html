@@ -90,9 +90,35 @@
             }
         });
 
-        // 3. Escuchar Mensajes en Tiempo Real
+      // 3. Escuchar Mensajes en Tiempo Real (COMPLETADO)
         function cargarMensajes() {
             const q = query(collection(db, "chats"), orderBy("fecha", "asc"));
+            const chatContainer = document.getElementById('chatContainer');
             
             onSnapshot(q, (snapshot) => {
-                const
+                // Limpiamos el contenedor para no duplicar mensajes
+                chatContainer.innerHTML = ''; 
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const esMio = data.autor === usuarioActual;
+                    
+                    // Creamos el elemento del mensaje
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `p-3 max-w-[80%] shadow-sm ${esMio ? 'message-out' : 'message-in'}`;
+                    
+                    msgDiv.innerHTML = `
+                        <p class="text-[10px] font-bold opacity-70 mb-1">${esMio ? 'Tú' : data.autor}</p>
+                        <p class="text-sm">${data.mensaje}</p>
+                    `;
+                    
+                    chatContainer.appendChild(msgDiv);
+                });
+
+                // Auto-scroll para ver siempre el último mensaje
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
