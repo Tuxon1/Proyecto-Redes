@@ -154,7 +154,13 @@
         </div>
 
         <div id="seccion-deportes" class="hidden p-6">
-            <h2 class="text-3xl font-bold text-cyan-glow mb-6"><i class="fas fa-chart-line"></i> Dashboard Deportivo</h2>
+                <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-cyan-glow"><i class="fas fa-chart-line"></i> Dashboard Deportivo</h2>
+            <button onclick="refrescarDashboard()" class="text-xs bg-white/10 hover:bg-white/20 border border-white/10 px-3 py-1 rounded-full transition flex items-center gap-2">
+                <i class="fas fa-sync-alt" id="refresh-icon"></i> Actualizar Datos 
+            </button>
+            
+        </div>
             
             <div class="flex border-b border-white/10 mb-6 overflow-x-auto">
                 <button onclick="changeTab('futbol')" id="btn-futbol" class="tab-btn tab-active flex-1 py-4 font-bold text-center px-4">
@@ -214,70 +220,120 @@
         }
 
         // --- LÓGICA DEPORTIVA (API REAL) ---
-        async function updateSports() {
+                async function updateSports() {
             const h = { "x-rapidapi-key": API_KEY };
 
-            // Fútbol Live
+            // --- FÚTBOL LIVE ---
             try {
                 h["x-rapidapi-host"] = "v3.football.api-sports.io";
                 const r = await fetch("https://v3.football.api-sports.io/fixtures?live=all", { headers: h });
                 const d = await r.json();
-                document.getElementById('soccer-live').innerHTML = d.response.slice(0, 4).map(m => `
-                    <div class="match-card">
-                        <div class="flex justify-between text-[9px] opacity-60 mb-1"><span>${m.league.name}</span><span class="text-red-500">${m.fixture.status.elapsed}'</span></div>
-                        <div class="flex justify-between text-xs font-bold"><span>${m.teams.home.name}</span><span>${m.goals.home}</span></div>
-                        <div class="flex justify-between text-xs font-bold"><span>${m.teams.away.name}</span><span>${m.goals.away}</span></div>
-                    </div>
-                `).join('') || "<p class='p-4 text-[10px] opacity-40 text-center'>No hay partidos en vivo</p>";
-            } catch (e) { console.error(e); }
+                
+                if (d.response && d.response.length > 0) {
+                    document.getElementById('soccer-live').innerHTML = d.response.slice(0, 4).map(m => `
+                        <div class="match-card">
+                            <div class="flex justify-between text-[9px] opacity-60 mb-1"><span>${m.league.name}</span><span class="text-red-500">${m.fixture.status.elapsed}'</span></div>
+                            <div class="flex justify-between text-xs font-bold"><span>${m.teams.home.name}</span><span>${m.goals.home}</span></div>
+                            <div class="flex justify-between text-xs font-bold"><span>${m.teams.away.name}</span><span>${m.goals.away}</span></div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Datos de ejemplo si no hay partidos en vivo o falla la API
+                    document.getElementById('soccer-live').innerHTML = `
+                        <div class="match-card opacity-50">
+                            <div class="flex justify-between text-[9px] mb-1"><span>La Liga</span><span class="text-gray-400">Finalizado</span></div>
+                            <div class="flex justify-between text-xs font-bold"><span>Real Madrid</span><span>2</span></div>
+                            <div class="flex justify-between text-xs font-bold"><span>FC Barcelona</span><span>1</span></div>
+                        </div>`;
+                }
+            } catch (e) { console.error("Error Fútbol:", e); }
 
-            // NBA Live
+          
+            // --- NBA LIVE (Lateral) ---
             try {
                 h["x-rapidapi-host"] = "v2.nba.api-sports.io";
                 const r = await fetch("https://v2.nba.api-sports.io/games?live=all", { headers: h });
                 const d = await r.json();
-                document.getElementById('nba-live').innerHTML = d.response.map(g => `
-                    <div class="match-card">
-                        <div class="flex justify-between text-xs"><span>${g.teams.home.name}</span><b>${g.scores.home.points}</b></div>
-                        <div class="flex justify-between text-xs"><span>${g.teams.visitors.name}</span><b>${g.scores.visitors.points}</b></div>
-                    </div>
-                `).join('') || "<p class='p-4 text-[10px] opacity-40 text-center'>NBA fuera de horario</p>";
-            } catch (e) { }
+                
+                if (d.response && d.response.length > 0) {
+                    document.getElementById('nba-live').innerHTML = d.response.map(g => `
+                        <div class="match-card">
+                            <div class="flex justify-between text-xs"><span>${g.teams.home.name}</span><b>${g.scores.home.points}</b></div>
+                            <div class="flex justify-between text-xs"><span>${g.teams.visitors.name}</span><b>${g.scores.visitors.points}</b></div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Mensaje más descriptivo cuando no hay partidos
+                    document.getElementById('nba-live').innerHTML = `
+                        <div class="p-4 text-center">
+                            <p class="text-[10px] opacity-40">No hay partidos en directo ahora mismo.</p>
+                            <p class="text-[9px] text-orange-500 mt-1 italic">Vuelve a conectar durante la madrugada.</p>
+                        </div>`;
+                }
+            } catch (e) { console.error("Error NBA Live:", e); }
 
-            // F1 Next
+            // --- F1 NEXT ---
             try {
                 h["x-rapidapi-host"] = "v1.formula-1.api-sports.io";
                 const r = await fetch("https://v1.formula-1.api-sports.io/races?next=1&type=race", { headers: h });
                 const d = await r.json();
-                if (d.response.length > 0) {
+                
+                if (d.response && d.response.length > 0) {
                     const rc = d.response[0];
                     document.getElementById('f1-next').innerHTML = `
                         <div class="match-card bg-red-600/5">
                             <div class="text-red-500 font-bold text-[10px] uppercase">${rc.competition.name}</div>
                             <div class="text-xs font-bold mt-1">${rc.circuit.name}</div>
                             <div class="mt-2 text-[10px] p-1 bg-red-600 text-white text-center rounded">${new Date(rc.date).toLocaleDateString()}</div>
-                        </div>
-                    `;
+                        </div>`;
+                } else {
+                    document.getElementById('f1-next').innerHTML = `
+                        <div class="match-card bg-red-600/5">
+                            <div class="text-red-500 font-bold text-[10px] uppercase">Próximo GP</div>
+                            <div class="text-xs font-bold mt-1">Circuito de Mónaco</div>
+                            <div class="mt-2 text-[10px] p-1 bg-gray-600 text-white text-center rounded">Próximamente</div>
+                        </div>`;
                 }
             } catch (e) { }
         }
 
         // --- PESTAÑAS SECCIÓN DEPORTES ---
-        function changeTab(sportId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('tab-active'); el.classList.add('text-gray-400'); });
+            function changeTab(sportId) {
+                // Gestión de clases visuales
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(el => { 
+                    el.classList.remove('tab-active'); 
+                    el.classList.add('text-gray-400'); 
+            });
+    
             document.getElementById(sportId).classList.add('active');
             document.getElementById('btn-' + sportId).classList.add('tab-active');
-            
-            // Aquí puedes llamar a funciones específicas para rellenar la pestaña con datos detallados
+    
+            // Carga de datos según la pestaña
             if(sportId === 'futbol') cargarDetalleFutbol();
+            if(sportId === 'baloncesto') cargarDetalleNBA();
+            if(sportId === 'f1') cargarDetalleF1();
         }
 
-        async function cargarDetalleFutbol() {
-            document.getElementById('datos-futbol').innerHTML = `<div class="p-4 bg-white/5 rounded-xl border border-white/10">Cargando clasificación detallada...</div>`;
-            // Aquí podrías hacer otro fetch a standings si quisieras
-        }
+        // --- REFRESCAR DASHBOARD ---
+                function refrescarDashboard() {
+            // Animación de giro en el icono
+            const icon = document.getElementById('refresh-icon');
+            icon.classList.add('fa-spin');
+            
+            // Detectamos qué pestaña está activa buscando el botón con la clase 'tab-active'
+            const activeBtn = document.querySelector('.tab-btn.tab-active');
+            
+            if (activeBtn.id === 'btn-futbol') cargarDetalleFutbol();
+            if (activeBtn.id === 'btn-baloncesto') cargarDetalleNBA();
+            if (activeBtn.id === 'btn-f1') cargarDetalleF1();
 
+            // También actualizamos los marcadores laterales
+            updateSports();
+
+            // Quitamos la animación después de 1 segundo
+            setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+        }
         // --- LÓGICA DEL MURO ---
         function irAlInicio() { mostrarSeccion('muro'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
@@ -327,6 +383,200 @@
             updateSports(); 
             setInterval(updateSports, 60000); // Actualiza cada minuto
         };
+                        async function cargarDetalleFutbol() {
+            const contenedor = document.getElementById('datos-futbol');
+            contenedor.innerHTML = `<div class="p-4 bg-white/5 animate-pulse rounded-xl">Consultando clasificación...</div>`;
+            
+            try {
+                const h = { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" };
+                const r = await fetch("https://v3.football.api-sports.io/standings?league=140&season=2023", { headers: h });
+                const d = await r.json();
+
+                if (d.response && d.response.length > 0) {
+                    const standings = d.response[0].league.standings[0];
+                    contenedor.innerHTML = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-xs uppercase opacity-50 border-b border-white/10">
+                                    <tr><th class="p-2">Pos</th><th>Equipo</th><th>PJ</th><th>PTS</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${standings.slice(0, 10).map(t => `
+                                        <tr class="border-b border-white/5 hover:bg-white/5">
+                                            <td class="p-2 font-bold">${t.rank}</td>
+                                            <td class="flex items-center gap-2 py-2"><img src="${t.team.logo}" class="w-4 h-4"> ${t.team.name}</td>
+                                            <td>${t.all.played}</td>
+                                            <td class="text-cyan-400 font-bold">${t.points}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>`;
+                } else { throw new Error(); }
+            } catch (e) {
+                cargarDatosSimuladosFutbol();
+            }
+        }
+
+                function cargarDatosSimuladosFutbol() {
+            const equipos = [
+                { r: 1, n: "Real Madrid", p: 38, pts: 95, color: "border-l-white" },
+                { r: 2, n: "FC Barcelona", p: 38, pts: 85, color: "border-l-red-600" },
+                { r: 3, n: "Girona", p: 38, pts: 81, color: "border-l-red-400" },
+                { r: 4, n: "Atlético Madrid", p: 38, pts: 76, color: "border-l-red-800" },
+                { r: 5, n: "Athletic Club", p: 38, pts: 68, color: "border-l-red-700" }
+            ];
+            
+            document.getElementById('datos-futbol').innerHTML = `
+                <div class="p-2 mb-4 bg-cyan-500/10 border border-cyan-500/20 rounded text-[10px] text-cyan-400 text-center uppercase tracking-widest font-bold">
+                    <i class="fas fa-database mr-2"></i> Mostrando Clasificación Histórica (Modo Offline)
+                </div>
+                <table class="w-full text-left text-sm">
+                    <thead class="text-[10px] uppercase opacity-40">
+                        <tr><th class="p-2">Pos</th><th>Club</th><th>PJ</th><th>PTS</th></tr>
+                    </thead>
+                    <tbody>
+                        ${equipos.map(e => `
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                                <td class="p-2 font-bold">${e.r}</td>
+                                <td class="py-3 border-l-4 ${e.color} pl-3">${e.n}</td>
+                                <td class="opacity-60">${e.p}</td>
+                                <td class="text-cyan-400 font-black">${e.pts}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+                        async function cargarDetalleNBA() {
+            const contenedor = document.getElementById('datos-baloncesto');
+            contenedor.innerHTML = `<div class="p-4 bg-white/5 animate-pulse rounded-xl text-orange-400">Consultando clasificación...</div>`;
+            
+            try {
+                const h = { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v2.nba.api-sports.io" };
+                const r = await fetch("https://v2.nba.api-sports.io/standings?league=standard&season=2023", { headers: h });
+                
+                if (!r.ok) throw new Error("Límite de API alcanzado"); // Forzamos el salto al "catch" si la API da error
+                
+                const d = await r.json();
+                
+                if (d.response && d.response.length > 0) {
+                    renderizarTablaNBA(d.response); // Función para dibujar la tabla real
+                } else {
+                    cargarDatosSimuladosNBA(); // Si la respuesta viene vacía (típico de NBA de día)
+                }
+            } catch (e) {
+                console.warn("Usando datos de respaldo para NBA debido a límites de API.");
+                cargarDatosSimuladosNBA(); // Datos de ejemplo para que la web no se vea rota
+            }
+        }
+
+                function cargarDatosSimuladosNBA() {
+                    const contenedor = document.getElementById('datos-baloncesto');
+                    const equiposSimulados = [
+                        { rank: 1, name: "Boston Celtics", record: "64 - 18", pct: ".780" },
+                        { rank: 2, name: "New York Knicks", record: "50 - 32", pct: ".610" },
+                        { rank: 3, name: "Milwaukee Bucks", record: "49 - 33", pct: ".598" },
+                        { rank: 4, name: "Cleveland Cavaliers", record: "48 - 34", pct: ".585" },
+                        { rank: 5, name: "Orlando Magic", record: "47 - 35", pct: ".573" }
+                    ];
+
+                    contenedor.innerHTML = `
+                        <div class="p-2 mb-4 bg-orange-500/10 border border-orange-500/20 rounded text-[10px] text-orange-400 text-center uppercase tracking-widest font-bold">
+                            <i class="fas fa-database mr-2"></i> Mostrando Clasificación Histórica (Modo Offline)
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-xs uppercase opacity-50 border-b border-white/10">
+                                    <tr><th class="p-2">Pos</th><th>Equipo (Conferencia Este)</th><th>V/D</th><th>%</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${equiposSimulados.map(t => `
+                                        <tr class="border-b border-white/5 hover:bg-white/5">
+                                            <td class="p-2 font-bold">${t.rank}</td>
+                                            <td class="py-2">${t.name}</td>
+                                            <td>${t.record}</td>
+                                            <td class="text-orange-400 font-bold">${t.pct}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>`;
+                }
+        
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Carga los detalles de la clasificaci n de F1 en el contenedor
+ * con el id 'datos-f1'. Muestra los 5 primeros pilotos de la
+ * clasificaci n con sus puntos.
+ * @throws {Error} Si no se puede obtener la clasificaci n.
+ */
+/*******  c15a58ce-d3af-4326-af21-f547cb285ead  *******/            
+                async function cargarDetalleF1() {
+        const contenedor = document.getElementById('datos-f1');
+        contenedor.innerHTML = `<div class="p-4 bg-white/5 animate-pulse rounded-xl text-red-500">Consultando ranking F1...</div>`;
+
+        try {
+            const h = { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v1.formula-1.api-sports.io" };
+            const r = await fetch("https://v1.formula-1.api-sports.io/rankings/drivers?season=2023", { headers: h });
+            const d = await r.json();
+
+            if (d.response && d.response.length > 0) {
+                contenedor.innerHTML = `
+                    <div class="space-y-2">
+                        ${d.response.slice(0, 5).map(driver => `
+                            <div class="flex items-center justify-between p-4 bg-red-600/5 border-l-4 border-red-600 rounded-r-xl">
+                                <div><div class="text-[10px] opacity-50">${driver.team.name}</div><div class="font-bold">${driver.driver.name}</div></div>
+                                <div class="text-2xl font-black text-red-600">${driver.points}</div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+            } else { throw new Error(); }
+        } catch (e) {
+            const pilotos = [
+                { n: "Max Verstappen", t: "Red Bull", p: 575 },
+                { n: "Sergio Perez", t: "Red Bull", p: 285 },
+                { n: "Lewis Hamilton", t: "Mercedes", p: 234 },
+                { n: "Fernando Alonso", t: "Aston Martin", p: 206 }
+            ];
+            contenedor.innerHTML = `
+                <div class="p-2 mb-4 bg-red-600/10 border border-red-600/20 rounded text-[10px] text-red-500 text-center uppercase">Modo Offline: Datos de Temporada</div>
+                <div class="space-y-2">
+                    ${pilotos.map(p => `<div class="flex items-center justify-between p-3 bg-white/5 border-l-4 border-red-600 rounded">
+                        <div><div class="text-[9px] opacity-50">${p.t}</div><div class="font-bold text-xs">${p.n}</div></div>
+                        <div class="text-xl font-black text-red-600">${p.p}</div>
+                    </div>`).join('')}
+                </div>`;
+        }
+    }
+            function cargarDatosSimuladosF1() {
+            const pilotos = [
+                { n: "Max Verstappen", t: "Red Bull Racing", p: 575, esc: "border-blue-600" },
+                { n: "Sergio Pérez", t: "Red Bull Racing", p: 285, esc: "border-blue-600" },
+                { n: "Lewis Hamilton", t: "Mercedes-AMG", p: 234, esc: "border-teal-400" },
+                { n: "Fernando Alonso", t: "Aston Martin", p: 206, esc: "border-green-700" },
+                { n: "Charles Leclerc", t: "Ferrari", p: 206, esc: "border-red-600" }
+            ];
+
+            document.getElementById('datos-f1').innerHTML = `
+                <div class="p-2 mb-4 bg-red-600/10 border border-red-600/20 rounded text-[10px] text-red-500 text-center uppercase tracking-widest font-bold">
+                    <i class="fas fa-flag-checkered mr-2"></i> Standings Provisionales
+                </div>
+                <div class="space-y-3">
+                    ${pilotos.map(p => `
+                        <div class="flex items-center justify-between p-3 bg-white/5 border-r-4 ${p.esc} rounded-l-lg hover:bg-white/10 transition">
+                            <div>
+                                <div class="text-[9px] uppercase opacity-50 font-bold">${p.t}</div>
+                                <div class="font-bold text-sm tracking-tight">${p.n}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[9px] opacity-40 uppercase">Puntos</div>
+                                <div class="text-xl font-black text-red-600">${p.p}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
     </script>
 </body>
 </html>
